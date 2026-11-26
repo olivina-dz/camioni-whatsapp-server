@@ -718,3 +718,6 @@ setInterval(() => {
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Camioni WhatsApp verification server on port ${PORT} (mock=${MOCK_SEND})`);
 });
+
+// Redeploy trigger: Deploy on push enabled - port 8080 fix
+
