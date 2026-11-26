@@ -9,14 +9,17 @@
 //   GET  /api/pending-registrations (header x-admin-key)
 //   GET  /api/registrations/:id/file/:field (header x-admin-key)
 //   POST /api/registrations/:id/imported (header x-admin-key)
-//   GET  /                      -> static Camioni website (public/index.html)
+//   GET  /                      -> static site for the request's Host
 //   GET  /assets/<file>         -> static website files from public/assets/
 //
-// This server ALSO serves the static Camioni website from the public/
-// directory (copied from the website project, v204). Any GET request whose
-// path does not start with /api/ is answered with the matching file in
-// public/ ("/" -> public/index.html, anything else -> 404). That is how
-// camioni.app will serve the site: the domain points at this same app.
+// This server ALSO serves static sites, chosen by the request Host:
+//   camioni.app (and camioni-whatsapp-server.fly.dev) -> the Camioni
+//     website from public/ (copied from the website project, v204).
+//   camioni.tech -> the driver registration page from public/driver/
+//     (single self-contained file; it posts to /api/driver-register).
+// Any GET request whose path does not start with /api/ is answered with the
+// matching file in the Host's directory ("/" -> index.html, anything else
+// -> 404). The /api/* endpoints work on both hosts.
 //
 // Configuration (environment variables, or a .env file next to this file):
 //   WHATSAPP_TOKEN     permanent system-user token, permission whatsapp_business_messaging
@@ -89,6 +92,7 @@ const ADMIN_KEY = (process.env.ADMIN_KEY || "").trim();
 const OWNER_WHATSAPP_NUMBER = (process.env.OWNER_WHATSAPP_NUMBER || "213561555300").trim();
 const UPLOADS_DIR = path.join(__dirname, "uploads");
 const PUBLIC_DIR = path.join(__dirname, "public"); // static Camioni website
+const DRIVER_DIR = path.join(PUBLIC_DIR, "driver"); // driver registration page (camioni.tech)
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB per document
 const MAX_TOTAL_UPLOAD_BYTES = 65 * 1024 * 1024; // 5 documents + fields
 const DOC_FIELDS = ["licence_front", "licence_back", "grey_card", "insurance", "technical_inspection"];
@@ -168,19 +172,19 @@ const STATIC_MIME = {
   ".ttf": "font/ttf",
 };
 
-// Serve one file from public/ for a non-API GET request. "/" maps to
-// public/index.html. Returns true when the request was answered (file found
-// or plain 404), false when the path escapes public/ (path traversal) so the
-// caller can answer with its own 404.
-function sendStatic(req, res, pathname) {
+// Serve one file from a static directory for a non-API GET request. "/"
+// maps to <dir>/index.html. Returns true when the request was answered
+// (file found or plain 404), false when the path escapes the directory
+// (path traversal) so the caller can answer with its own 404.
+function sendStatic(req, res, baseDir, pathname) {
   let rel;
   try {
     rel = pathname === "/" ? "index.html" : decodeURIComponent(pathname).replace(/^\/+/, "");
   } catch (e) {
     return false;
   }
-  const filePath = path.resolve(PUBLIC_DIR, rel);
-  if (filePath !== PUBLIC_DIR && !filePath.startsWith(PUBLIC_DIR + path.sep)) {
+  const filePath = path.resolve(baseDir, rel);
+  if (filePath !== baseDir && !filePath.startsWith(baseDir + path.sep)) {
     return false;
   }
   fs.stat(filePath, (err, stat) => {
@@ -757,9 +761,13 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { ok: true, registrationId: importedMatch[1], status: "imported" }, origin || "*");
   }
 
-  // Static website: any GET that is not under /api/ is served from public/.
+  // Static sites, chosen by Host: camioni.tech serves the driver
+  // registration page (public/driver/); every other host serves the
+  // website (public/). /api/* works on both hosts.
   if (req.method === "GET" && !url.pathname.startsWith("/api/")) {
-    if (sendStatic(req, res, url.pathname)) return;
+    const host = String(req.headers.host || "").toLowerCase().split(":")[0];
+    const baseDir = host === "camioni.tech" || host.endsWith(".camioni.tech") ? DRIVER_DIR : PUBLIC_DIR;
+    if (sendStatic(req, res, baseDir, url.pathname)) return;
   }
 
   return sendJson(res, 404, { ok: false, error: "not_found" }, origin || "*");
