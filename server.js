@@ -13,7 +13,7 @@
 // Configuration (environment variables, or a .env file next to this file):
 //   WHATSAPP_TOKEN     permanent system-user token, permission whatsapp_business_messaging
 //   PHONE_NUMBER_ID    Camioni WhatsApp Phone Number ID (1423215967538810)
-//   PORT               default 3000
+//   PORT               default 8080
 //   ALLOWED_ORIGINS    comma-separated origins allowed to call the API,
 //                      default * (restrict this to the Camioni website when live)
 //   MOCK_SEND          set to 1 only for local testing: no message is sent to Meta
@@ -71,7 +71,7 @@ try {
   console.error("Could not read .env:", err.message);
 }
 
-const PORT = Number(process.env.PORT || 3000);
+const PORT = Number(process.env.PORT || 8080);
 const WHATSAPP_TOKEN = (process.env.WHATSAPP_TOKEN || "").trim();
 const PHONE_NUMBER_ID = (process.env.PHONE_NUMBER_ID || "1423215967538810").trim();
 const WHATSAPP_TEMPLATE_NAME = (process.env.WHATSAPP_TEMPLATE_NAME || "").trim();

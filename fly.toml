@@ -1,11 +1,11 @@
-app = "camioni-whatsapp"
-primary_region = "cdg"
+app = "camioni-whatsapp-server"
+primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = "off"
   auto_start_machines = true
