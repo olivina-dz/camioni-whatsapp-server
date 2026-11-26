@@ -188,14 +188,18 @@ function sendStatic(req, res, baseDir, pathname) {
     return false;
   }
   fs.stat(filePath, (err, stat) => {
-    if (err || !stat.isFile()) {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      res.end("Not found");
-      return;
-    }
-    const type = STATIC_MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
-    res.writeHead(200, { "Content-Type": type, "Content-Length": stat.size });
-    fs.createReadStream(filePath).pipe(res);
+    // A directory serves its index.html (e.g. /driver/ -> public/driver/index.html).
+    const target = !err && stat.isDirectory() ? path.join(filePath, "index.html") : filePath;
+    fs.stat(target, (err2, stat2) => {
+      if (err2 || !stat2.isFile()) {
+        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Not found");
+        return;
+      }
+      const type = STATIC_MIME[path.extname(target).toLowerCase()] || "application/octet-stream";
+      res.writeHead(200, { "Content-Type": type, "Content-Length": stat2.size });
+      fs.createReadStream(target).pipe(res);
+    });
   });
   return true;
 }
