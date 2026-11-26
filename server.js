@@ -9,6 +9,14 @@
 //   GET  /api/pending-registrations (header x-admin-key)
 //   GET  /api/registrations/:id/file/:field (header x-admin-key)
 //   POST /api/registrations/:id/imported (header x-admin-key)
+//   GET  /                      -> static Camioni website (public/index.html)
+//   GET  /assets/<file>         -> static website files from public/assets/
+//
+// This server ALSO serves the static Camioni website from the public/
+// directory (copied from the website project, v204). Any GET request whose
+// path does not start with /api/ is answered with the matching file in
+// public/ ("/" -> public/index.html, anything else -> 404). That is how
+// camioni.app will serve the site: the domain points at this same app.
 //
 // Configuration (environment variables, or a .env file next to this file):
 //   WHATSAPP_TOKEN     permanent system-user token, permission whatsapp_business_messaging
@@ -80,6 +88,7 @@ const MOCK_SEND = process.env.MOCK_SEND === "1";
 const ADMIN_KEY = (process.env.ADMIN_KEY || "").trim();
 const OWNER_WHATSAPP_NUMBER = (process.env.OWNER_WHATSAPP_NUMBER || "213561555300").trim();
 const UPLOADS_DIR = path.join(__dirname, "uploads");
+const PUBLIC_DIR = path.join(__dirname, "public"); // static Camioni website
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB per document
 const MAX_TOTAL_UPLOAD_BYTES = 65 * 1024 * 1024; // 5 documents + fields
 const DOC_FIELDS = ["licence_front", "licence_back", "grey_card", "insurance", "technical_inspection"];
@@ -141,6 +150,50 @@ function sendJson(res, status, obj, origin) {
   headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS";
   res.writeHead(status, headers);
   res.end(JSON.stringify(obj));
+}
+
+const STATIC_MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".webp": "image/webp",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+  ".woff": "font/woff",
+  ".woff2": "font/woff2",
+  ".ttf": "font/ttf",
+};
+
+// Serve one file from public/ for a non-API GET request. "/" maps to
+// public/index.html. Returns true when the request was answered (file found
+// or plain 404), false when the path escapes public/ (path traversal) so the
+// caller can answer with its own 404.
+function sendStatic(req, res, pathname) {
+  let rel;
+  try {
+    rel = pathname === "/" ? "index.html" : decodeURIComponent(pathname).replace(/^\/+/, "");
+  } catch (e) {
+    return false;
+  }
+  const filePath = path.resolve(PUBLIC_DIR, rel);
+  if (filePath !== PUBLIC_DIR && !filePath.startsWith(PUBLIC_DIR + path.sep)) {
+    return false;
+  }
+  fs.stat(filePath, (err, stat) => {
+    if (err || !stat.isFile()) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+      return;
+    }
+    const type = STATIC_MIME[path.extname(filePath).toLowerCase()] || "application/octet-stream";
+    res.writeHead(200, { "Content-Type": type, "Content-Length": stat.size });
+    fs.createReadStream(filePath).pipe(res);
+  });
+  return true;
 }
 
 function corsOrigin(req) {
@@ -704,6 +757,11 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { ok: true, registrationId: importedMatch[1], status: "imported" }, origin || "*");
   }
 
+  // Static website: any GET that is not under /api/ is served from public/.
+  if (req.method === "GET" && !url.pathname.startsWith("/api/")) {
+    if (sendStatic(req, res, url.pathname)) return;
+  }
+
   return sendJson(res, 404, { ok: false, error: "not_found" }, origin || "*");
 });
 
@@ -718,6 +776,3 @@ setInterval(() => {
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Camioni WhatsApp verification server on port ${PORT} (mock=${MOCK_SEND})`);
 });
-
-// Redeploy trigger: Deploy on push enabled - port 8080 fix
-
