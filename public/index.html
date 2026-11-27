@@ -824,35 +824,6 @@ img.offer-stamp.stamp-img{width:208px}
   #page-home .fleet-sec{padding:28px 0 32px}
 }
 
-/* ---------- قسم الأسطول في الرئيسية: شريط تمرير (Carousel) متحرك تلقائياً ----------
-   صف واحد أفقي: 3 مركبات على الشاشات العريضة، 2 على المتوسطة، 1 على الهاتف.
-   يتحرك تلقائياً نحو اليسار (مركبة جديدة تدخل من اليمين) خطوة واحدة كل 5 ثوانٍ،
-   في حلقة مستمرة بلا توقف، ويتجمّد عند التحويم فوقه. البطاقات نفسها بلا أي تغيير:
-   نفس الحشوة 20px، نفس صندوق الصورة (314px كحد أقصى)، نفس الشريط العلوي الملوّن
-   لكل عائلة، ونفس الاسم والحمولة تحت كل مركبة. المسار باتجاه LTR ميكانيكياً فقط
-   حتى تنزلق المركبات لليسار، وداخل كل شريحة يبقى الاتجاه RTL كما هو. */
-.fleet-carousel{position:relative}
-.fc-viewport{overflow:hidden;margin-inline:-8px}
-.fc-track{display:flex;direction:ltr;transition:transform .55s ease;will-change:transform}
-.fc-track.fc-noanim{transition:none!important}
-.fc-slide{flex:0 0 33.333333%;max-width:33.333333%;padding:0 8px;direction:rtl;display:flex}
-.fc-slide .fleet-card{flex:1 1 auto;width:100%;padding:20px}
-.fc-slide .veh-art.fleet-art{max-width:314px;margin-inline:auto}
-.fc-btn{position:absolute;top:110px;transform:translateY(-50%);z-index:6;width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(12,33,64,.16)}
-.fc-btn:hover{border-color:var(--orange);background:var(--orange-soft);color:var(--orange-dark)}
-.fc-btn:active{transform:translateY(-50%) scale(.94)}
-.fc-btn svg{width:20px;height:20px;flex-shrink:0}
-.fc-btn-prev{left:2px}
-.fc-btn-next{right:2px}
-html[data-theme="dark"] .fc-btn{background:#111e31;color:#f2f6fc}
-@media (max-width:900px){
-  .fc-slide{flex-basis:50%;max-width:50%}
-}
-@media (max-width:640px){
-  .fc-slide{flex-basis:100%;max-width:100%}
-}
-@media (prefers-reduced-motion:reduce){.fc-track{transition:none}}
-
 /* ---------- شريط الإحصائيات تحت حدود الشاشة الأولى ----------
    الشريط (69 ولاية / أنواع المركبات / 40 طن) يبقى كما هو تماماً:
    نفس الأرقام والمحتوى والتصميم، لكنه لا يظهر عند فتح الموقع
@@ -1937,67 +1908,17 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     [1], /* السحب والأشغال: شاحنة رفع خفيفة */
     [0]  /* الأشغال العمومية: مضخة الخرسانة */
   ];
-  /* شريط الأسطول المتحرك في الرئيسية: يتقدّم شريحة واحدة كل 5 ثوانٍ نحو اليسار،
-     في حلقة مستمرة (نسخة مكررة من البطاقات تلي الأصلية، فعند تجاوز الأخيرة يقفز
-     الشريط بلا حركة مرئية إلى البداية المطابقة تماماً)، يتوقف عند التحويم أو
-     التركيز داخله، ويستأنف عند الابتعاد. سهمان فقط: السابق يساراً والتالي يميناً. */
-  function initFleetCarousel(car){
-    if (!car) return;
-    var track = car.querySelector(".fc-track");
-    if (!track || track.children.length < 2) return;
-    var total = track.children.length / 2;
-    var idx = 0, timer = null, jumping = false, hovered = false, focused = false;
-    var reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    function slideW(){ var s = track.children[0]; return s ? s.getBoundingClientRect().width : 0; }
-    function apply(animate){
-      if (!slideW()) return;
-      if (!animate) track.classList.add("fc-noanim");
-      track.style.transform = "translateX(" + (-idx * slideW()) + "px)";
-      if (!animate){ void track.offsetHeight; track.classList.remove("fc-noanim"); }
-    }
-    function step(dir){
-      if (jumping || !slideW()) return;
-      if (dir > 0){
-        idx++;
-        apply(true);
-        if (idx >= total){
-          jumping = true;
-          setTimeout(function(){ idx = 0; apply(false); jumping = false; }, 600);
-        }
-      } else if (idx <= 0){
-        idx = total; apply(false);
-        requestAnimationFrame(function(){ requestAnimationFrame(function(){ idx = total - 1; apply(true); }); });
-      } else { idx--; apply(true); }
-    }
-    function start(){ stop(); if (reduced || hovered || focused) return; timer = setInterval(function(){ step(1); }, 5000); }
-    function stop(){ if (timer){ clearInterval(timer); timer = null; } }
-    car.addEventListener("mouseenter", function(){ hovered = true; stop(); });
-    car.addEventListener("mouseleave", function(){ hovered = false; start(); });
-    car.addEventListener("focusin", function(){ focused = true; stop(); });
-    car.addEventListener("focusout", function(e){ if (e.relatedTarget && car.contains(e.relatedTarget)) return; focused = false; start(); });
-    car.querySelector(".fc-btn-next").addEventListener("click", function(){ step(1); start(); });
-    car.querySelector(".fc-btn-prev").addEventListener("click", function(){ step(-1); start(); });
-    window.addEventListener("resize", function(){ apply(false); });
-    start();
-  }
   function renderFleet(el, preview){
     if (!el) return;
     if (preview) {
-      /* الرئيسية فقط: المركبات المختارة من كل العائلات في شريط تمرير متحرك
-         واحد، بلا عناوين عائلات، والبطاقات نفسها كما هي تماماً. */
+      /* الرئيسية فقط: المركبات المختارة من كل العائلات في شبكة واحدة
+         موحّدة، بلا عناوين عائلات، ثلاث بطاقات في كل صف. */
       var cards = [];
       FLEET_GROUPS.forEach(function(g, gi){
         var picks = HOME_PICKS[gi] || [0];
         picks.forEach(function(i){ if (g.items[i]) cards.push(fleetCard(g.items[i], g.color)); });
       });
-      var slides = cards.map(function(c){ return '<div class="fc-slide">' + c + '</div>'; });
-      var dup = cards.map(function(c){ return '<div class="fc-slide" aria-hidden="true">' + c.replace('<a class="btn', '<a tabindex="-1" class="btn') + '</div>'; });
-      el.innerHTML = '<div class="fleet-carousel">' +
-        '<div class="fc-viewport"><div class="fc-track">' + slides.join("") + dup.join("") + '</div></div>' +
-        '<button type="button" class="fc-btn fc-btn-prev" aria-label="السابق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button>' +
-        '<button type="button" class="fc-btn fc-btn-next" aria-label="التالي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button>' +
-        '</div>';
-      initFleetCarousel(el.querySelector(".fleet-carousel"));
+      el.innerHTML = '<div class="grid fleet-grid fleet-grid-home">' + cards.join("") + '</div>';
       return;
     }
     /* صفحة الأسطول الكاملة: كل المركبات مصنّفة بالعائلات مع عناوينها، كما هي. */
@@ -2740,7 +2661,6 @@ var ARIA_I18N={fr:{
 "تواصل معنا عبر واتساب":"Contactez-nous via WhatsApp",
 "الوضع الليلي":"Mode nuit",
 "إغلاق":"Fermer",
-"السابق":"Précédent","التالي":"Suivant",
 "افتح التقويم لاختيار التاريخ":"Ouvrir le calendrier pour choisir la date",
 "الشهر السابق":"Mois précédent","الشهر التالي":"Mois suivant","الشهر":"Mois","السنة":"Année",
 "بطاقة طلب نقل كاميوني — تتبع مباشر لحالة الطلب":"Carte de commande Camioni — suivi en direct du statut"},
@@ -2753,7 +2673,6 @@ en:{
 "تواصل معنا عبر واتساب":"Contact us via WhatsApp",
 "الوضع الليلي":"Dark mode",
 "إغلاق":"Close",
-"السابق":"Previous","التالي":"Next",
 "افتح التقويم لاختيار التاريخ":"Open the calendar to choose a date",
 "الشهر السابق":"Previous month","الشهر التالي":"Next month","الشهر":"Month","السنة":"Year",
 "بطاقة طلب نقل كاميوني — تتبع مباشر لحالة الطلب":"Camioni transport order card — live status tracking"}};
