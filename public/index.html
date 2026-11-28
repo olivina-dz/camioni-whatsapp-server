@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark" />
 <script>try{var _t=localStorage.getItem("camioni-theme");if(_t==="dark"||_t==="light"){document.documentElement.setAttribute("data-theme",_t);}else if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){document.documentElement.setAttribute("data-theme","dark");}}catch(e){}</script>
 <meta name="description" content="كاميوني Camioni — منصة جزائرية للنقل والشحن. اطلب نقل بضاعتك مباشرة من الموقع بدون تحميل التطبيق، عبر 69 ولاية وبكل أنواع المركبات حتى 60 طن." />
-<link rel="icon" type="image/webp" href="assets/logo-transparent.webp" />
+<link rel="icon" type="image/webp" href="assets/favicon.webp" />
 <title>كاميوني Camioni — نقل البضائع في الجزائر | اطلب بدون تطبيق</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -119,7 +119,11 @@ nav.main a.active{background:var(--orange);color:#fff}
 .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .btn-driver{background:#fff;color:var(--navy);border:2px solid var(--orange)}
 .btn-driver:hover{background:#fff4e8}
-.btn-driver svg{width:20px;height:20px;flex-shrink:0;color:var(--orange)}
+.btn-driver svg{width:20px;height:20px;flex-shrink:0;color:var(--navy)}
+/* توهج وامض حول زر «سجل كسائق»: توهج برتقالي خفيف عبر box-shadow فقط، الزر نفسه ثابت تماماً */
+@keyframes driverGlow{0%,100%{box-shadow:0 0 0 0 rgba(242,106,27,0)}50%{box-shadow:0 0 24px 7px rgba(242,106,27,.45)}}
+.btn-driver{animation:driverGlow 2.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.btn-driver{animation:none}}
 .hero-checks{display:flex;gap:22px;flex-wrap:wrap;margin-top:24px}
 .hero-checks span{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.94rem;color:var(--navy)}
 .hero-checks svg{width:19px;height:19px;flex-shrink:0}
@@ -354,6 +358,12 @@ html[data-theme="dark"] .theme-btn .ic-moon{display:none}
 .brand-word img.bw-w{display:none}
 footer .brand-word img.bw-w,.section.navy .brand-word img.bw-w,.ready .brand-word img.bw-w,.contact-big .brand-word img.bw-w,.offer-banner .brand-word img.bw-w,.topbar .brand-word img.bw-w,html[data-theme="dark"] .brand-word img.bw-w{display:block}
 footer .brand-word img.bw-n,.section.navy .brand-word img.bw-n,.ready .brand-word img.bw-n,.contact-big .brand-word img.bw-n,.offer-banner .brand-word img.bw-n,.topbar .brand-word img.bw-n,html[data-theme="dark"] .brand-word img.bw-n{display:none}
+/* ---------- Brand word inside the orange button: an all-white variant (letters AND dots white, so the dots stay visible on the orange background), aligned on the same text baseline as the words beside it ---------- */
+.brand-word img.bw-o{display:none}
+.btn-orange .brand-word img.bw-n,.btn-orange .brand-word img.bw-w{display:none}
+html[data-theme="dark"] .btn-orange .brand-word img.bw-w{display:none}
+.btn-orange .brand-word img.bw-o{display:block}
+.btn-orange .brand-word.ar{vertical-align:-0.32em}
 
 /* ---------- Hero visual: app-order mockup, mirrored layout, floating ---------- */
 .hero-visual{position:relative;padding:16px 8px 30px;animation:floaty 6s ease-in-out infinite}
@@ -1039,8 +1049,8 @@ html[data-theme="dark"] .fc-btn{background:#111e31;color:#f2f6fc}
           <h1 class="hero-title" id="heroTitle" aria-label="احجز ناقلاً لبضاعتك خلال دقائق"><span class="hw-word" style="--d:.12s"><span class="hw-word-in">احجز</span><span class="hw-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span> <span class="hw-word" style="--d:.38s"><span class="hw-word-in">ناقلاً</span><span class="hw-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span> <span class="hw-word" style="--d:.64s"><span class="hw-word-in">لبضاعتك</span><span class="hw-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span> <span class="hw-word hl" style="--d:.90s"><span class="hw-word-in">خلال</span><span class="hw-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span> <span class="hw-word hl" style="--d:1.16s"><span class="hw-word-in">دقائق</span><span class="hw-dust" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span></span></h1>
           <p class="lead">اطلب نقل بضاعتك مباشرة من الموقع بدون تحميل التطبيق حدّد نوع البضاعة ومكان الاستلام والتسليم،ثم انشر طلبك خلال دقائق تصلك عروض مختلفه من السائقين اختر ما يناسبك ..... ساهلة ماهلة - من الطرد الصغير حتى حمولات 60 طن، عبر كل الولايات.</p>
           <div class="hero-ctas">
-            <a class="btn btn-orange" href="#/order">اطلب الآن</a>
-            <button type="button" class="btn btn-driver" id="driverOpenBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18M5 17V9l4-5h6l4 5v8"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>سجل كسائق</button>
+            <a class="btn btn-orange" href="#/order">اطلب كاميوني الآن</a>
+            <button type="button" class="btn btn-driver" id="driverOpenBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.2"/><path d="M12 9.8V3.4M10.4 13.6l-4.6 4.6M13.6 13.6l4.6 4.6"/></svg>سجل كسائق</button>
           </div>
           <div class="hero-checks">
             <span><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg> طلب مباشر من الموقع</span>
@@ -1478,7 +1488,7 @@ html[data-theme="dark"] .fc-btn{background:#111e31;color:#f2f6fc}
         <h2>جاهز للشحن؟</h2>
         <p>اطلب نقلك في بضع نقرات من داخل الموقع، وتصلك عروض السائقين مباشرة لتختار ما يناسبك.</p>
         <div class="contacts">
-          <a class="btn btn-orange" href="#/order">اطلب الآن</a>
+          <a class="btn btn-orange" href="#/order">اطلب كاميوني الآن</a>
           <a class="btn btn-ghost" href="tel:+213795318016">اتصال هاتفي</a>
           <span class="phone">+213 795 31 80 16</span>
         </div>
@@ -2956,7 +2966,7 @@ var FR={
 "من نحن":"À propos",
 "الأسئلة الشائعة":"Questions fréquentes",
 "اتصل بنا":"Contact",
-"اطلب الآن":"Commander",
+"اطلب كاميوني الآن":"Commander Camioni",
 "سجل كسائق":"S'inscrire comme chauffeur",
 "راسلنا واتساب — 0795 31 80 16":"Écrivez-nous sur WhatsApp — 0795 31 80 16",
 "الدعم":"Assistance",
@@ -3441,6 +3451,7 @@ function highlightBrand(){
         var lat=(part==="Camioni");
         var i1=document.createElement("img"); i1.className="bw-n"; i1.src=lat?"assets/brand-lat.webp":"assets/brand-ar.webp"; i1.alt=part; i1.width=lat?405:574; i1.height=lat?52:183; i1.decoding="async"; s.appendChild(i1);
         var i2=document.createElement("img"); i2.className="bw-w"; i2.src=lat?"assets/brand-lat-white.webp":"assets/brand-ar-white.webp"; i2.alt=""; i2.setAttribute("aria-hidden","true"); i2.width=i1.width; i2.height=i1.height; i2.decoding="async"; s.appendChild(i2);
+        var i3=document.createElement("img"); i3.className="bw-o"; i3.src=lat?"assets/brand-lat-white.webp":"assets/brand-ar-btn.webp"; i3.alt=""; i3.setAttribute("aria-hidden","true"); i3.width=i1.width; i3.height=i1.height; i3.decoding="async"; s.appendChild(i3);
         chunk.appendChild(s);
       }else if(part){chunk.appendChild(document.createTextNode(part));}
     });
@@ -3522,7 +3533,7 @@ window.CAMIONI_I18N.en={
 "من نحن":"About us",
 "الأسئلة الشائعة":"FAQ",
 "اتصل بنا":"Contact us",
-"اطلب الآن":"Order now",
+"اطلب كاميوني الآن":"Order Camioni now",
 "سجل كسائق":"Register as a driver",
 "راسلنا واتساب — 0795 31 80 16":"Message us on WhatsApp — 0795 31 80 16",
 "الدعم":"Support",
