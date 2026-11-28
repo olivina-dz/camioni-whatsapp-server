@@ -103,7 +103,15 @@ nav.main a.active{background:var(--orange);color:#fff}
 .tick-list svg{width:21px;height:21px;flex-shrink:0;margin-top:5px}
 
 /* ---------- Home hero ---------- */
-.hero{padding:24px 0 0;background:linear-gradient(180deg,#fdf3ea 0%,#ffffff 82%)}
+.hero{position:relative;padding:24px 0 0;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 60%)}
+/* ---------- Hero background: light map grid + moving trucks (v223, light theme only) ---------- */
+.hero-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;background:radial-gradient(640px 320px at 12% 22%,rgba(230,237,247,.95),rgba(230,237,247,0) 70%),radial-gradient(640px 340px at 88% 18%,rgba(253,238,227,.95),rgba(253,238,227,0) 70%),radial-gradient(720px 420px at 50% 60%,rgba(253,244,232,.6),rgba(253,244,232,0) 70%),repeating-linear-gradient(0deg,#e8ecf2 0 1px,transparent 1px 110px),repeating-linear-gradient(90deg,#e8ecf2 0 1px,transparent 1px 180px)}
+.hero>.wrap,.hero>.statband{position:relative;z-index:1}
+.hero-truck{position:absolute;left:0;top:0;width:46px;height:46px;color:#f26a1b;opacity:.9;filter:drop-shadow(0 0 7px rgba(242,106,27,.45));transform-origin:center;will-change:transform;transform:translate(-200px,-200px)}
+.hero-truck svg{display:block;width:100%;height:100%}
+.hero-truck.navy{color:#0c2140;filter:drop-shadow(0 0 7px rgba(12,33,64,.4))}
+.hero-truck.soft{color:#f68b4d;filter:drop-shadow(0 0 7px rgba(246,139,77,.45))}
+@media (max-width:640px){.hero-truck{width:36px;height:36px}}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:center}
 .hero h1{font-size:2.7rem;font-weight:900;line-height:1.3}
 .hero h1 .hl{color:var(--orange)}
@@ -213,6 +221,14 @@ nav.main a.active{background:var(--orange);color:#fff}
 .success-box.show{display:block}
 .success-box h3{color:#0d6e38;margin-bottom:6px}
 .success-box p{color:#215c3a}
+.offers-panel{margin:14px 0 4px}
+.offers-waiting{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 12px;background:#f3fbf6;border:1px dashed #9fe0ba;border-radius:12px}
+.offers-waiting p{margin:0;font-size:.98rem}
+.offers-spinner{width:26px;height:26px;border-radius:50%;border:3px solid #bfe9d2;border-top-color:#0d6e38;animation:offers-spin 1s linear infinite}
+@keyframes offers-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.offers-spinner{animation:none}}
+.offers-list{display:flex;flex-direction:column;gap:10px}
+.offers-note{font-size:.86rem;color:#4a7a5c !important;margin-top:10px}
 .route-box{background:var(--soft);border:1px dashed #b9cbe6;border-radius:14px;padding:16px 18px;margin-bottom:20px}
 .route-box b{color:var(--navy)}
 
@@ -374,6 +390,7 @@ html[data-theme="dark"] .field input,html[data-theme="dark"] .field select,html[
 html[data-theme="dark"] .field label{color:#f2f6fc}
 html[data-theme="dark"] .faq-item summary{color:#f2f6fc}
 html[data-theme="dark"] .hero{background:linear-gradient(180deg,#182a45 0%,var(--bg) 82%)}
+html[data-theme="dark"] .hero-bg{display:none}
 html[data-theme="dark"] .page-hero{background:linear-gradient(180deg,#16283f,var(--bg))}
 html[data-theme="dark"] nav.main a{color:var(--ink)}
 html[data-theme="dark"] nav.main a.active{color:#fff}
@@ -390,6 +407,10 @@ html[data-theme="dark"] .verified-box{background:#0f2e1e;border-color:#1f6b43;co
 html[data-theme="dark"] .success-box{background:#0f2e1e;border-color:#1f6b43}
 html[data-theme="dark"] .success-box h3{color:#7bd99f}
 html[data-theme="dark"] .success-box p{color:#b7e4c7}
+html[data-theme="dark"] .offers-waiting{background:#0f2e1e;border-color:#1f6b43}
+html[data-theme="dark"] .offers-waiting p{color:#b7e4c7}
+html[data-theme="dark"] .offers-spinner{border-color:#1f6b43;border-top-color:#7bd99f}
+html[data-theme="dark"] .offers-note{color:#8fe3b4 !important}
 html[data-theme="dark"] .app-strip{background:#2a1a0e;border-color:#5a3a1e}
 html[data-theme="dark"] .app-strip p{color:#e8c39a !important}
 html[data-theme="dark"] select option{background:#111e31;color:#e8eef7}
@@ -572,6 +593,51 @@ html[data-theme="dark"] .map-row.map-selected{background:#2a1c10}
   .map-list{max-height:180px}
   .map-box{padding:18px 14px}
 }
+
+/* ---------- Driver registration modal (نافذة تسجيل السائق داخل الموقع) ---------- */
+.drv-modal{position:fixed;inset:0;z-index:220;background:rgba(12,33,64,.55);display:flex;align-items:flex-end;justify-content:center}
+.drv-modal[hidden]{display:none}
+.drv-box{background:#fff;border-radius:22px 22px 0 0;padding:26px 24px 24px;width:100%;max-width:540px;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pageIn .25s ease;max-height:94dvh;overflow-y:auto}
+@media(min-width:640px){.drv-modal{align-items:center;padding:20px}.drv-box{border-radius:22px}}
+.drv-box h3{font-size:1.3rem;font-weight:900;margin:0 0 4px;padding-inline-end:44px}
+.drv-sub{color:var(--muted);font-weight:700;font-size:.93rem;margin:0}
+.drv-progress{display:flex;gap:6px;margin:16px 0 18px}
+.drv-progress .p{flex:1;text-align:center;font-size:.76rem;font-weight:800;color:var(--muted);padding-bottom:6px;border-bottom:3px solid var(--line)}
+.drv-progress .p.on{color:var(--orange-dark);border-color:var(--orange)}
+.drv-progress .p.done{color:var(--green-dark);border-color:var(--green)}
+.drv-pane[hidden]{display:none}
+.drv-wide{width:100%}
+.drv-declare{display:flex;gap:10px;align-items:flex-start;background:var(--soft);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font-weight:700;font-size:.97rem;min-height:48px}
+.drv-declare input{width:22px;height:22px;min-height:22px;margin-top:3px;accent-color:var(--orange);flex:none;cursor:pointer}
+.drv-declare.invalid{border-color:#c2261b}
+.drv-terms{font-size:.82rem;color:var(--muted);text-align:center;margin:10px 0 0}
+.drv-sent{background:#e9f9f0;color:#0d6e38;border-radius:12px;padding:11px 14px;font-weight:800;font-size:.95rem;text-align:center;margin-bottom:14px}
+.drv-center{text-align:center}
+.drv-line-err{display:none;color:#c2261b;font-weight:700;font-size:.9rem;margin-top:10px;text-align:center}
+.drv-line-err.show{display:block}
+.drv-foot{display:flex;gap:10px;margin-top:16px}
+.drv-foot .btn{flex:1}
+.drv-linklike{background:none;border:none;color:var(--orange-dark);font-weight:800;font-size:.95rem;cursor:pointer;font-family:inherit;padding:4px 8px;min-height:36px}
+.drv-linklike:disabled{opacity:.6;cursor:default}
+.drv-doc{display:flex;align-items:center;gap:12px;border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px;cursor:pointer;min-height:64px;background:#fff}
+.drv-doc:hover{border-color:var(--orange)}
+.drv-doc.filled{border-style:solid;border-color:var(--green);background:#e9f9f0}
+.drv-doc img{width:54px;height:42px;object-fit:cover;border-radius:7px;display:none}
+.drv-doc .t{flex:1;min-width:0}
+.drv-doc .t b{display:block;font-size:.95rem;color:var(--navy)}
+.drv-doc .t small{color:var(--muted);font-size:.8rem;font-weight:700;overflow-wrap:anywhere}
+.drv-doc .st{font-size:1.25rem;color:var(--muted);font-weight:900;flex:none}
+.drv-doc.filled .st{color:var(--green-dark)}
+.drv-doc input{display:none}
+.drv-ok-ic{width:74px;height:74px;border-radius:50%;background:#e9f9f0;color:var(--green-dark);display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;margin:8px auto 14px}
+html[data-theme="dark"] .drv-box{background:#111e31}
+html[data-theme="dark"] .drv-box h3,html[data-theme="dark"] .drv-doc .t b{color:#f2f6fc}
+html[data-theme="dark"] .drv-declare{background:#0d1522}
+html[data-theme="dark"] .drv-doc{background:#0d1522}
+html[data-theme="dark"] .drv-doc.filled{background:#12351f}
+html[data-theme="dark"] .drv-sent{background:#12351f;color:#7fe6a8}
+html[data-theme="dark"] .drv-ok-ic{background:#12351f}
+@media(max-width:640px){.drv-box{padding:20px 16px}}
 
 @media (max-width:1080px){
   nav.main{display:none}
@@ -824,6 +890,35 @@ img.offer-stamp.stamp-img{width:208px}
   #page-home .fleet-sec{padding:28px 0 32px}
 }
 
+/* ---------- قسم الأسطول في الرئيسية: شريط تمرير (Carousel) متحرك تلقائياً ----------
+   صف واحد أفقي: 3 مركبات على الشاشات العريضة، 2 على المتوسطة، 1 على الهاتف.
+   يتحرك تلقائياً نحو اليسار (مركبة جديدة تدخل من اليمين) خطوة واحدة كل 5 ثوانٍ،
+   في حلقة مستمرة بلا توقف، ويتجمّد عند التحويم فوقه. البطاقات نفسها بلا أي تغيير:
+   نفس الحشوة 20px، نفس صندوق الصورة (314px كحد أقصى)، نفس الشريط العلوي الملوّن
+   لكل عائلة، ونفس الاسم والحمولة تحت كل مركبة. المسار باتجاه LTR ميكانيكياً فقط
+   حتى تنزلق المركبات لليسار، وداخل كل شريحة يبقى الاتجاه RTL كما هو. */
+.fleet-carousel{position:relative}
+.fc-viewport{overflow:hidden;margin-inline:-8px}
+.fc-track{display:flex;direction:ltr;transition:transform .55s ease;will-change:transform}
+.fc-track.fc-noanim{transition:none!important}
+.fc-slide{flex:0 0 33.333333%;max-width:33.333333%;padding:0 8px;direction:rtl;display:flex}
+.fc-slide .fleet-card{flex:1 1 auto;width:100%;padding:20px}
+.fc-slide .veh-art.fleet-art{max-width:314px;margin-inline:auto}
+.fc-btn{position:absolute;top:110px;transform:translateY(-50%);z-index:6;width:40px;height:40px;min-height:40px;padding:0;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(12,33,64,.16)}
+.fc-btn:hover{border-color:var(--orange);background:var(--orange-soft);color:var(--orange-dark)}
+.fc-btn:active{transform:translateY(-50%) scale(.94)}
+.fc-btn svg{width:20px;height:20px;flex-shrink:0}
+.fc-btn-prev{left:2px}
+.fc-btn-next{right:2px}
+html[data-theme="dark"] .fc-btn{background:#111e31;color:#f2f6fc}
+@media (max-width:900px){
+  .fc-slide{flex-basis:50%;max-width:50%}
+}
+@media (max-width:640px){
+  .fc-slide{flex-basis:100%;max-width:100%}
+}
+@media (prefers-reduced-motion:reduce){.fc-track{transition:none}}
+
 /* ---------- شريط الإحصائيات تحت حدود الشاشة الأولى ----------
    الشريط (69 ولاية / أنواع المركبات / 40 طن) يبقى كما هو تماماً:
    نفس الأرقام والمحتوى والتصميم، لكنه لا يظهر عند فتح الموقع
@@ -930,6 +1025,13 @@ img.offer-stamp.stamp-img{width:208px}
 <section class="page" id="page-home">
   <!-- الواجهة -->
   <div class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <span class="hero-truck t1"><svg viewBox="0 0 48 24" aria-hidden="true"><rect x="7" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="7" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="2.4" y="2" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="2.4" y="20.1" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="3" y="3.4" width="42" height="17.2" rx="3" fill="currentColor"/><rect x="3" y="3.4" width="12.5" height="17.2" rx="3" fill="#000" opacity=".13"/><rect x="4.8" y="5.6" width="3.4" height="12.8" rx="1.5" fill="#dcebf7" opacity=".92"/><rect x="17.5" y="5.6" width="25.3" height="12.8" rx="1.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/><path d="M25.2 5.6v12.8M33.4 5.6v12.8" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><rect x="2.1" y="6.1" width="1.9" height="3" rx=".9" fill="#ffd98a"/><rect x="2.1" y="14.9" width="1.9" height="3" rx=".9" fill="#ffd98a"/></svg></span>
+      <span class="hero-truck t2 navy"><svg viewBox="0 0 48 24" aria-hidden="true"><rect x="7" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="7" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="2.4" y="2" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="2.4" y="20.1" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="3" y="3.4" width="42" height="17.2" rx="3" fill="currentColor"/><rect x="3" y="3.4" width="12.5" height="17.2" rx="3" fill="#000" opacity=".13"/><rect x="4.8" y="5.6" width="3.4" height="12.8" rx="1.5" fill="#dcebf7" opacity=".92"/><rect x="17.5" y="5.6" width="25.3" height="12.8" rx="1.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/><path d="M25.2 5.6v12.8M33.4 5.6v12.8" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><rect x="2.1" y="6.1" width="1.9" height="3" rx=".9" fill="#ffd98a"/><rect x="2.1" y="14.9" width="1.9" height="3" rx=".9" fill="#ffd98a"/></svg></span>
+      <span class="hero-truck t3 soft"><svg viewBox="0 0 48 24" aria-hidden="true"><rect x="7" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="7" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="2.4" y="2" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="2.4" y="20.1" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="3" y="3.4" width="42" height="17.2" rx="3" fill="currentColor"/><rect x="3" y="3.4" width="12.5" height="17.2" rx="3" fill="#000" opacity=".13"/><rect x="4.8" y="5.6" width="3.4" height="12.8" rx="1.5" fill="#dcebf7" opacity=".92"/><rect x="17.5" y="5.6" width="25.3" height="12.8" rx="1.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/><path d="M25.2 5.6v12.8M33.4 5.6v12.8" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><rect x="2.1" y="6.1" width="1.9" height="3" rx=".9" fill="#ffd98a"/><rect x="2.1" y="14.9" width="1.9" height="3" rx=".9" fill="#ffd98a"/></svg></span>
+      <span class="hero-truck t4 navy"><svg viewBox="0 0 48 24" aria-hidden="true"><rect x="7" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="7" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="2.4" y="2" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="2.4" y="20.1" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="3" y="3.4" width="42" height="17.2" rx="3" fill="currentColor"/><rect x="3" y="3.4" width="12.5" height="17.2" rx="3" fill="#000" opacity=".13"/><rect x="4.8" y="5.6" width="3.4" height="12.8" rx="1.5" fill="#dcebf7" opacity=".92"/><rect x="17.5" y="5.6" width="25.3" height="12.8" rx="1.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/><path d="M25.2 5.6v12.8M33.4 5.6v12.8" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><rect x="2.1" y="6.1" width="1.9" height="3" rx=".9" fill="#ffd98a"/><rect x="2.1" y="14.9" width="1.9" height="3" rx=".9" fill="#ffd98a"/></svg></span>
+      <span class="hero-truck t5"><svg viewBox="0 0 48 24" aria-hidden="true"><rect x="7" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="7" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="0.6" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="36" y="20.2" width="6.5" height="3.2" rx="1.4" fill="#0c2140"/><rect x="2.4" y="2" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="2.4" y="20.1" width="2.8" height="1.9" rx=".9" fill="#0c2140" opacity=".5"/><rect x="3" y="3.4" width="42" height="17.2" rx="3" fill="currentColor"/><rect x="3" y="3.4" width="12.5" height="17.2" rx="3" fill="#000" opacity=".13"/><rect x="4.8" y="5.6" width="3.4" height="12.8" rx="1.5" fill="#dcebf7" opacity=".92"/><rect x="17.5" y="5.6" width="25.3" height="12.8" rx="1.6" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.3"/><path d="M25.2 5.6v12.8M33.4 5.6v12.8" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><rect x="2.1" y="6.1" width="1.9" height="3" rx=".9" fill="#ffd98a"/><rect x="2.1" y="14.9" width="1.9" height="3" rx=".9" fill="#ffd98a"/></svg></span>
+    </div>
     <div class="wrap">
       <div class="hero-grid">
         <div>
@@ -938,11 +1040,11 @@ img.offer-stamp.stamp-img{width:208px}
           <p class="lead">اطلب نقل بضاعتك مباشرة من الموقع بدون تحميل التطبيق حدّد نوع البضاعة ومكان الاستلام والتسليم،ثم انشر طلبك خلال دقائق تصلك عروض مختلفه من السائقين اختر ما يناسبك ..... ساهلة ماهلة - من الطرد الصغير حتى حمولات 60 طن، عبر كل الولايات.</p>
           <div class="hero-ctas">
             <a class="btn btn-orange" href="#/order">اطلب الآن</a>
-            <a class="btn btn-driver" href="https://camioni.app/driver/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18M5 17V9l4-5h6l4 5v8"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>سجل كسائق</a>
+            <button type="button" class="btn btn-driver" id="driverOpenBtn" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18M5 17V9l4-5h6l4 5v8"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>سجل كسائق</button>
           </div>
           <div class="hero-checks">
             <span><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg> طلب مباشر من الموقع</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg> تأكيد هاتفي سريع</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-5"/></svg> تأكيد فوري داخل المنصة</span>
           </div>
         </div>
         <div class="hero-visual" role="img" aria-label="بطاقة طلب نقل كاميوني — تتبع مباشر لحالة الطلب">
@@ -955,7 +1057,7 @@ img.offer-stamp.stamp-img{width:208px}
               <span class="hero-mock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17h18M5 17V9l4-5h6l4 5v8"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg></span>
               <span><b>طلب جديد</b><span>الجزائر ← وهران</span></span>
             </div>
-            <div class="hero-mock-status"><i></i>تم استلام طلبك — نؤكّد الناقل الآن</div>
+            <div class="hero-mock-status"><i></i>عروض السائقين تصل الآن</div>
             <div class="hero-track"><i></i></div>
           </div>
           <div class="hero-chips">
@@ -973,6 +1075,334 @@ img.offer-stamp.stamp-img{width:208px}
       </div>
     </div>
   </div>
+<script>
+/* Hero trucks (v231): random walk on the map grid, Wajeeh-style — each truck on its own
+   path/direction/speed, rotating 90° at intersections, cab-first, never reversing.
+   Sole exception vs the sample: no truck ever crosses the main title + lead block.
+   Collision avoidance (v231): a grid cell and the segment between two cells each
+   belong to at most one truck at a time — a truck reserves the cell it is heading
+   for and the segment it will travel before it leaves its current cell, frees
+   the cell it leaves the moment it starts moving, and frees the segment on arrival. A truck that cannot reserve any way out waits
+   briefly at the intersection and retries, or turns back (U-turn, cab-first) if
+   the way back is free — so two trucks approaching each other visibly separate,
+   one turning away, and never touch. */
+(function(){
+  var bg=document.querySelector('.hero-bg');
+  if(!bg)return;
+  var hero=bg.parentElement;
+  var els=bg.querySelectorAll('.hero-truck');
+  if(!hero||!els.length)return;
+  var CW=180,CH=110,MARGIN=40,TURN=280;
+  var SPEEDS=[15,19,22,25,17];
+  var DIRS=[[-1,0],[0,-1],[1,0],[0,1]]; /* 0 left,1 up,2 right,3 down — SVG faces left, rotation = dir*90 */
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var forbidden=null,statTop=1e9,W=0,H=0;
+  /* layout position relative to the hero, via the offset chain — immune to the
+     entrance animations' transforms, which shift getBoundingClientRect() while
+     they run and would let a truck start (or park) inside the settled zone */
+  function relRect(el){
+    var x=0,y=0,n=el;
+    while(n&&n!==hero){x+=n.offsetLeft;y+=n.offsetTop;n=n.offsetParent;}
+    return {left:x,top:y,right:x+el.offsetWidth,bottom:y+el.offsetHeight};
+  }
+  function measure(){
+    if(hero.offsetWidth<50)return; /* hero hidden (another page) — keep last good values */
+    W=hero.offsetWidth;H=hero.offsetHeight;
+    var t=document.getElementById('heroTitle'),l=hero.querySelector('.lead');
+    var x1=1e9,y1=1e9,x2=-1e9,y2=-1e9,found=false;
+    [t,l].forEach(function(el){
+      if(!el)return;
+      var r=relRect(el);found=true;
+      x1=Math.min(x1,r.left);y1=Math.min(y1,r.top);
+      x2=Math.max(x2,r.right);y2=Math.max(y2,r.bottom);
+    });
+    forbidden=found?{x1:x1-MARGIN,y1:y1-MARGIN,x2:x2+MARGIN,y2:y2+MARGIN}:null;
+    var sb=hero.querySelector('.statband');
+    statTop=sb?relRect(sb).top:H;
+  }
+  function maxCol(){return Math.max(1,Math.floor((W-30)/CW));}
+  function maxRow(){return Math.max(1,Math.floor((Math.min(statTop,H)-30)/CH));}
+  function inForb(x,y){return !!forbidden&&x>forbidden.x1&&x<forbidden.x2&&y>forbidden.y1&&y<forbidden.y2;}
+  function segHits(x1,y1,x2,y2){
+    if(!forbidden)return false;
+    if(inForb(x1,y1))return inForb(x2,y2); /* already inside (zone moved on resize): only leaving is allowed */
+    var f=forbidden;
+    if(y1===y2){if(y1<=f.y1||y1>=f.y2)return false;return Math.max(x1,x2)>f.x1&&Math.min(x1,x2)<f.x2;}
+    if(x1<=f.x1||x1>=f.x2)return false;return Math.max(y1,y2)>f.y1&&Math.min(y1,y2)<f.y2;
+  }
+  function canGo(x,y,nx,ny){
+    if(nx<24||nx>W-24||ny<24||ny>Math.min(statTop,H)-24)return false;
+    return !segHits(x,y,nx,ny);
+  }
+  function validMove(tr,nx,ny){return canGo(tr.x,tr.y,nx,ny);}
+  /* does cell (x,y), entered heading dirIn, offer any onward move besides going back? */
+  function hasExit(x,y,dirIn){
+    var ds=[dirIn,(dirIn+3)%4,(dirIn+1)%4];
+    for(var i=0;i<ds.length;i++){
+      if(canGo(x,y,x+DIRS[ds[i]][0]*CW,y+DIRS[ds[i]][1]*CH))return true;
+    }
+    return false;
+  }
+  /* v232: does cell (x,y) have at least one valid exit at all — a neighbour
+     that is on-grid and outside the forbidden zone, in any of the 4
+     directions (reverse included)? A cell without one is a trap: a truck
+     placed there can never leave, so it must never be a starting cell or a
+     relocation target. */
+  function anyExit(x,y){
+    for(var b=0;b<4;b++){
+      if(canGo(x,y,x+DIRS[b][0]*CW,y+DIRS[b][1]*CH))return true;
+    }
+    return false;
+  }
+  /* v231 collision avoidance — exclusive reservations. A grid cell and the
+     grid segment (edge) between two cells each belong to at most one truck
+     at a time. A truck reserves the cell it is heading for and the segment
+     it will travel BEFORE it leaves its current cell (in pickDir, trying
+     candidates in weighted-random order and taking the first that is free);
+     it frees the cell it left the moment it starts moving, so the truck
+     behind can never drive into it (a follower still needs a whole leg to
+     reach that cell, by which time the truck that left is well clear, and
+     the edge reservation stops anyone coming head-on). On arrival
+     it frees the segment and the cell it arrived at becomes the cell it
+     holds. No time estimates and no speed assumptions are involved, so the
+     guarantee cannot be undone by a truck speeding up again: a cell or
+     segment simply cannot be double-booked. */
+  var cellOwner={},edgeOwner={}; /* "x,y" -> truck index; "x1,y1>x2,y2" -> truck index */
+  function cellKey(x,y){return x+','+y;}
+  function edgeKey(x1,y1,x2,y2){ /* one key per segment, whichever end you start from */
+    return (x1<x2||(x1===x2&&y1<y2))?x1+','+y1+'>'+x2+','+y2:x2+','+y2+'>'+x1+','+y1;
+  }
+  /* reserve the cell (nx,ny) and the segment from this truck's cell to it.
+     Succeeds only if neither is owned by another truck. */
+  function reserve(tr,nx,ny){
+    var ck=cellKey(nx,ny),ek=edgeKey(tr.x,tr.y,nx,ny);
+    var co=cellOwner[ck],eo=edgeOwner[ek];
+    if(!((co===undefined||co===tr.idx)&&(eo===undefined||eo===tr.idx)))return false;
+    cellOwner[ck]=tr.idx;edgeOwner[ek]=tr.idx;
+    tr.destKey=ck;tr.edge=ek;
+    return true;
+  }
+  /* releases only free what this truck itself owns — a truck never frees
+     another truck's reservation (e.g. after two trucks shared a starting
+     cell on a cramped grid). */
+  function releaseCellKey(k,idx){if(k&&cellOwner[k]===idx)delete cellOwner[k];}
+  function releaseEdgeKey(k,idx){if(k&&edgeOwner[k]===idx)delete edgeOwner[k];}
+  function pickDir(tr){
+    var cand=[[tr.dir,2],[(tr.dir+3)%4,1],[(tr.dir+1)%4,1]],opts=[],dead=[],i;
+    for(i=0;i<cand.length;i++){
+      var d=cand[i][0],nx=tr.x+DIRS[d][0]*CW,ny=tr.y+DIRS[d][1]*CH;
+      if(!validMove(tr,nx,ny))continue;
+      (hasExit(nx,ny,d)?opts:dead).push(cand[i]); /* avoid dead-end cells: entering one forces a reversal */
+    }
+    if(!opts.length)opts=dead;
+    /* try each candidate in weighted-random order (the same draw v230 made);
+       take the first whose cell and segment are free — reserving them on the
+       spot — and turn away from the rest instead of driving into another truck */
+    while(opts.length){
+      var tot=0,pick,j;
+      for(j=0;j<opts.length;j++)tot+=opts[j][1];
+      pick=Math.random()*tot;
+      for(j=0;j<opts.length;j++){pick-=opts[j][1];if(pick<=0)break;}
+      if(j>=opts.length)j=opts.length-1;
+      var d2=opts[j][0];
+      opts.splice(j,1);
+      if(reserve(tr,tr.x+DIRS[d2][0]*CW,tr.y+DIRS[d2][1]*CH))return d2;
+    }
+    /* reverse only as a last resort (v230), and only if the way back is free:
+       a U-turn, cab-first, instead of waiting forever or driving into a truck */
+    var r=(tr.dir+2)%4,rx=tr.x+DIRS[r][0]*CW,ry=tr.y+DIRS[r][1]*CH;
+    if(validMove(tr,rx,ry)&&reserve(tr,rx,ry))return r;
+    return -1; /* every way out is in use: wait at the intersection, retry shortly */
+  }
+  /* v232 stuck-truck recovery. If a truck finds no valid move for over ~2s
+     (repeated pickDir -1 waits — e.g. it sits in a trap cell whose exits are
+     all inside the forbidden zone or off-grid), it fades out where it stands
+     and fades back in at a free cell that has a valid exit: never a visible
+     teleport across the screen, never a reversal, never into the forbidden
+     zone and never onto a cell another truck holds or is heading for. */
+  function findRelocCell(tr){
+    var a,b;
+    for(a=0;a<60;a++){
+      var x=(1+Math.floor(Math.random()*maxCol()))*CW;
+      var y=(1+Math.floor(Math.random()*maxRow()))*CH;
+      if(x===tr.x&&y===tr.y)continue;
+      if(inForb(x,y)||!anyExit(x,y))continue;
+      var co=cellOwner[cellKey(x,y)];
+      if(co!==undefined&&co!==tr.idx)continue;
+      var ok=true;
+      for(b=0;b<trucks.length;b++){
+        if(b===tr.idx)continue;
+        var dx=trucks[b].x-x,dy=trucks[b].y-y;
+        if(dx*dx+dy*dy<14400){ok=false;break;}
+      }
+      if(ok)return{x:x,y:y};
+    }
+    for(var r=1;r<=maxRow();r++)for(var c=1;c<=maxCol();c++){
+      var fx=c*CW,fy=r*CH;
+      if(fx===tr.x&&fy===tr.y)continue;
+      if(inForb(fx,fy)||!anyExit(fx,fy))continue;
+      var co2=cellOwner[cellKey(fx,fy)];
+      if(co2!==undefined&&co2!==tr.idx)continue;
+      return{x:fx,y:fy};
+    }
+    return null;
+  }
+  function startReloc(tr,now){
+    var target=findRelocCell(tr);
+    if(!target){tr.stuckSince=now;return;} /* nowhere free to go: keep waiting, retry in ~2s */
+    tr.relocTarget=target;tr.mode='reloc';tr.phase=0;tr.t=now;tr.dur=380;
+  }
+  function doReloc(tr){ /* runs at the fully faded-out midpoint, so the jump itself is never seen */
+    releaseCellKey(tr.holdKey,tr.idx);releaseCellKey(tr.destKey,tr.idx);releaseEdgeKey(tr.edge,tr.idx);
+    tr.holdKey=null;tr.destKey=null;tr.edge=null;
+    tr.x=tr.relocTarget.x;tr.y=tr.relocTarget.y;tr.relocTarget=null;
+    tr.fx=tr.tx=tr.x;tr.fy=tr.ty=tr.y;
+    tr.holdKey=cellKey(tr.x,tr.y);cellOwner[tr.holdKey]=tr.idx;
+    for(var b=0;b<4;b++){ /* face along a direction that has a valid exit */
+      if(canGo(tr.x,tr.y,tr.x+DIRS[b][0]*CW,tr.y+DIRS[b][1]*CH)){tr.dir=b;break;}
+    }
+    tr.rot=tr.dir*90;tr.stuckSince=0;
+  }
+  function render(tr){
+    tr.el.style.transform='translate('+(tr.x-tr.half)+'px,'+(tr.y-tr.half)+'px) rotate('+tr.rot+'deg)';
+  }
+  function beginMove(tr,now){
+    if(tr.holdKey){releaseCellKey(tr.holdKey,tr.idx);tr.holdKey=null;} /* v231: the cell I am leaving is free the moment I start moving — a follower still needs a whole leg (>=4.4s) to reach it, by which time I am >=66px away, and the edge reservation stops anyone coming head-on along my segment */
+    tr.dir=tr.nd;tr.mode='move';tr.t=now;tr.stuckSince=0; /* v232: moving again — no longer stuck */
+    tr.fx=tr.x;tr.fy=tr.y;
+    tr.tx=tr.x+DIRS[tr.dir][0]*CW;tr.ty=tr.y+DIRS[tr.dir][1]*CH;
+    tr.dur=(Math.abs(tr.tx-tr.fx)+Math.abs(tr.ty-tr.fy))/tr.speed*1000;
+  }
+  function startNext(tr,now){
+    var nd=pickDir(tr);
+    if(nd<0){tr.mode='wait';tr.t=now;tr.dur=400;if(!tr.stuckSince)tr.stuckSince=now;return;} /* v232: remember when the stuck spell began */
+    tr.nd=nd;
+    var delta=(nd-tr.dir+4)%4;
+    if(delta===0){beginMove(tr,now);return;}
+    tr.mode='turn';tr.t=now;tr.dur=TURN;tr.fr=tr.rot;
+    tr.tr2=tr.rot+(delta===1?90:delta===3?-90:180);
+  }
+  function tick(now){
+    for(var i=0;i<trucks.length;i++){
+      var tr=trucks[i],p;
+      if(tr.mode==='reloc'){ /* v232: fade out, reposition while invisible, fade back in */
+        p=Math.min(1,(now-tr.t)/tr.dur);
+        if(tr.phase===0){
+          tr.el.style.opacity=(0.9*(1-p)).toFixed(3);
+          if(p>=1){doReloc(tr);tr.phase=1;tr.t=now;}
+        }else{
+          tr.el.style.opacity=(0.9*p).toFixed(3);
+          if(p>=1){tr.el.style.opacity='';tr.mode='wait';tr.t=now;tr.dur=0;}
+        }
+      }else if(tr.mode==='turn'){
+        p=Math.min(1,(now-tr.t)/tr.dur);
+        tr.rot=tr.fr+(tr.tr2-tr.fr)*p;
+        if(p>=1){tr.rot=tr.tr2;beginMove(tr,now);}
+      }else if(tr.mode==='move'){
+        p=Math.min(1,(now-tr.t)/tr.dur);
+        tr.x=tr.fx+(tr.tx-tr.fx)*p;tr.y=tr.fy+(tr.ty-tr.fy)*p;
+        if(p>=1){
+          tr.x=tr.tx;tr.y=tr.ty;
+          if(tr.holdKey)releaseCellKey(tr.holdKey,tr.idx); /* the cell I left, if not freed on the way */
+          releaseEdgeKey(tr.edge,tr.idx);tr.edge=null; /* the segment is free again */
+          tr.holdKey=tr.destKey;tr.destKey=null; /* the cell I arrived at is the cell I now hold */
+          startNext(tr,now);
+        }
+      }else if(tr.mode==='wait'&&now-tr.t>=tr.dur){
+        startNext(tr,now);
+        if(tr.mode==='wait'&&tr.stuckSince&&now-tr.stuckSince>2000)startReloc(tr,now); /* v232: no valid move for over ~2s — recover instead of waiting forever */
+      }
+      render(tr);
+    }
+    requestAnimationFrame(tick);
+  }
+  var trucks=[],i;
+  for(i=0;i<els.length;i++){
+    trucks.push({el:els[i],half:23,speed:SPEEDS[i%SPEEDS.length],dir:0,rot:0,x:0,y:0,
+      mode:'wait',t:0,dur:0,fx:0,fy:0,tx:0,ty:0,fr:0,tr2:0,nd:0,idx:i,holdKey:null,destKey:null,edge:null,stuckSince:0,phase:0,relocTarget:null});
+  }
+  measure();
+  /* initial scattered placement: distinct intersections, >=120px apart, never in the forbidden zone */
+  var dirPool=[0,1,2,3,Math.floor(Math.random()*4)];
+  for(i=dirPool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=dirPool[i];dirPool[i]=dirPool[j];dirPool[j]=tmp;}
+  var placed=[];
+  trucks.forEach(function(tr,idx){
+    tr.half=tr.el.offsetWidth/2||23;
+    var best=null,a,b;
+    for(a=0;a<80&&!best;a++){
+      var x=(1+Math.floor(Math.random()*maxCol()))*CW;
+      var y=(1+Math.floor(Math.random()*maxRow()))*CH;
+      if(inForb(x,y))continue;
+      var linked=false; /* starting cell must lead somewhere that is not a dead end */
+      for(b=0;b<4&&!linked;b++){
+        var gx=x+DIRS[b][0]*CW,gy=y+DIRS[b][1]*CH;
+        if(canGo(x,y,gx,gy)&&hasExit(gx,gy,b))linked=true;
+      }
+      if(!linked)continue;
+      var ok=true;
+      for(b=0;b<placed.length;b++){var dx=placed[b].x-x,dy=placed[b].y-y;if(dx*dx+dy*dy<14400){ok=false;break;}}
+      if(ok)best={x:x,y:y};
+    }
+    if(!best){
+      for(var pass=0;pass<3&&!best;pass++)
+      for(var r=1;r<=maxRow()&&!best;r++)for(var c=1;c<=maxCol()&&!best;c++){
+        var fx=c*CW,fy=r*CH;
+        if(inForb(fx,fy))continue;
+        if(!anyExit(fx,fy))continue; /* v232: never place a truck in a trap cell with no valid exit (e.g. (180,110) beside the title pill on narrow screens) — pick a different free cell instead */
+        if(pass===0){
+          var lk=false;
+          for(var g=0;g<4&&!lk;g++){
+            var hx=fx+DIRS[g][0]*CW,hy=fy+DIRS[g][1]*CH;
+            if(canGo(fx,fy,hx,hy)&&hasExit(hx,hy,g))lk=true;
+          }
+          if(!lk)continue;
+        }
+        if(pass<2){ /* v231: keep trucks on distinct cells when the grid allows it */
+          var ok=true;
+          for(var b=0;b<placed.length;b++){var dx=placed[b].x-fx,dy=placed[b].y-fy;if(dx*dx+dy*dy<4761){ok=false;break;}}
+          if(!ok)continue;
+        }
+        best={x:fx,y:fy};
+      }
+    }
+    if(!best)best={x:CW,y:CH};
+    tr.x=best.x;tr.y=best.y;placed.push(best);
+    tr.holdKey=cellKey(best.x,best.y);
+    if(cellOwner[tr.holdKey]===undefined)cellOwner[tr.holdKey]=tr.idx; /* v231: reserve the starting cell (a shared cell on a cramped grid stays owned by the first truck there) */
+    tr.dir=dirPool[idx%dirPool.length];tr.rot=tr.dir*90;
+    render(tr);
+  });
+  if(reduced)return; /* parked at their scattered starting points */
+  /* re-measure the forbidden zone while entrance animations settle, then on resize */
+  setTimeout(measure,2500);
+  var n=0,iv=setInterval(function(){measure();if(++n>=5)clearInterval(iv);},2000);
+  var rzT;
+  window.addEventListener('resize',function(){
+    clearTimeout(rzT);
+    rzT=setTimeout(function(){
+      measure();
+      trucks.forEach(function(tr){
+        tr.half=tr.el.offsetWidth/2||23;
+        if(tr.mode==='reloc'){tr.mode='wait';tr.t=0;tr.dur=0;tr.phase=0;tr.relocTarget=null;tr.el.style.opacity='';tr.stuckSince=0;} /* v232: cancel a mid-fade recovery on resize; normal logic resumes from the clamped cell */
+        tr.x=Math.max(CW,Math.min(tr.x,maxCol()*CW));
+        tr.y=Math.max(CH,Math.min(tr.y,maxRow()*CH));
+        if(tr.mode!=='move'){
+          tr.fx=tr.tx=tr.x;tr.fy=tr.ty=tr.y;
+          if(tr.holdKey!==cellKey(tr.x,tr.y)){ /* v231: the clamp moved the truck to another cell — drop its stale reservations and re-decide from the new cell */
+            releaseCellKey(tr.holdKey,tr.idx);releaseCellKey(tr.destKey,tr.idx);releaseEdgeKey(tr.edge,tr.idx);
+            tr.destKey=null;tr.edge=null;tr.mode='wait';tr.t=0;tr.dur=0;tr.rot=tr.dir*90;tr.stuckSince=0;
+            tr.holdKey=cellKey(tr.x,tr.y);
+            if(cellOwner[tr.holdKey]===undefined)cellOwner[tr.holdKey]=tr.idx;
+          }
+        }
+        render(tr);
+      });
+    },200);
+  });
+  window.addEventListener('hashchange',function(){setTimeout(measure,60);});
+  requestAnimationFrame(tick);
+})();
+</script>
 
   <!-- أسطول شركائنا -->
   <div class="section fleet-sec">
@@ -1000,7 +1430,7 @@ img.offer-stamp.stamp-img{width:208px}
         <div class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
         <div class="step-card"><div class="num">02</div><h3>استلم التأكيد</h3><p>يصل طلبك إلى فريقنا مباشرة داخل المنصة، نراجعه ونؤكّد لك الناقل.</p></div>
         <div class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-        <div class="step-card"><div class="num">03</div><h3>تابع حتى التسليم</h3><p>يبقى فريق كاميوني على تواصل هاتفي معك من لحظة الاستلام حتى تأكيد وصول بضاعتك.</p></div>
+        <div class="step-card"><div class="num">03</div><h3>تابع حتى التسليم</h3><p>تتابع بضاعتك داخل المنصة من لحظة الاستلام حتى التسليم، ويبقى السائق على تواصل مباشر معك طوال الرحلة.</p></div>
       </div>
       <div class="center-cta" style="margin-top:30px">
         <a class="btn btn-ghost" href="#/how">شرح مفصّل لكيفية العمل</a>
@@ -1029,7 +1459,7 @@ img.offer-stamp.stamp-img{width:208px}
         <div class="card">
           <div class="icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="#f26a1b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.5 13.5H11L9.5 22 19 10h-6.5L13 2Z"/></svg></div>
           <h3>سريع وبدون تطبيق</h3>
-          <p>اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ونؤكّده معك هاتفياً.</p>
+          <p>اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ويؤكّده لك السائق مباشرة داخلها.</p>
         </div>
       </div>
       <div class="mini-stats">
@@ -1046,7 +1476,7 @@ img.offer-stamp.stamp-img{width:208px}
     <div class="wrap">
       <div class="ready">
         <h2>جاهز للشحن؟</h2>
-        <p>اطلب نقلك في بضع نقرات من داخل الموقع، وسيتصل بك فريقنا هاتفياً لتأكيد كل شيء.</p>
+        <p>اطلب نقلك في بضع نقرات من داخل الموقع، وتصلك عروض السائقين مباشرة لتختار ما يناسبك.</p>
         <div class="contacts">
           <a class="btn btn-orange" href="#/order">اطلب الآن</a>
           <a class="btn btn-ghost" href="tel:+213795318016">اتصال هاتفي</a>
@@ -1063,7 +1493,7 @@ img.offer-stamp.stamp-img{width:208px}
       <div class="app-strip">
         <div>
           <h3>تطبيق كاميوني الآن على Google Play</h3>
-          <p style="color:#7a3c10;font-weight:600">كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون ويستقبلون الطلبات مباشرة من التطبيق.</p>
+          <p style="color:#7a3c10;font-weight:600">كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون من هذا الموقع أو من التطبيق، ويستقبلون الطلبات مباشرة من التطبيق.</p>
         </div>
         <span class="play-badge">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M4 3.5v17c0 .5.55.8.95.5l9.3-8.5c.25-.23.25-.63 0-.86L4.95 3.02A.62.62 0 0 0 4 3.5Zm12.3 6.06 2.62-2.4c.35-.32.28-.9-.14-1.12L5.9 2.6l10.4 6.96Zm0 4.88L5.9 21.4l12.88-3.44c.42-.22.49-.8.14-1.12l-2.62-2.4Z" opacity=".95"/></svg>
@@ -1099,7 +1529,7 @@ img.offer-stamp.stamp-img{width:208px}
           <p style="color:var(--muted);margin-bottom:20px">أن نجعل نقل البضائع في الجزائر بسيطاً وسريعاً وعادلاً: توصيل أسرع للتاجر، حمولات أكثر للسائق، وأسعار أوضح للجميع.</p>
           <div class="grid" style="gap:14px">
             <div class="card" style="padding:20px 22px"><span class="values-num">01</span><h3 style="margin-top:6px">البساطة أولاً</h3><p>طلب نقل يُملأ في دقيقتين من الهاتف، بدون حساب وبدون تحميل تطبيق.</p></div>
-            <div class="card" style="padding:20px 22px"><span class="values-num">02</span><h3 style="margin-top:6px">الثقة قبل كل شيء</h3><p>كل طلب يُراجَع ويُؤكَّد بالتواصل الهاتفي المباشر.</p></div>
+            <div class="card" style="padding:20px 22px"><span class="values-num">02</span><h3 style="margin-top:6px">الثقة قبل كل شيء</h3><p>كل طلب يُراجَع داخل المنصة ويُؤكَّد من طرف السائق مباشرة.</p></div>
             <div class="card" style="padding:20px 22px"><span class="values-num">03</span><h3 style="margin-top:6px">جزائرية بالكامل</h3><p>من الجزائر وإليها: دعم بالعربية، معرفة بالولايات والبلديات وطرقنا، وفريق يردّ عليك بسرعة.</p></div>
           </div>
         </div>
@@ -1134,7 +1564,7 @@ img.offer-stamp.stamp-img{width:208px}
     <div class="wrap">
       <div class="crumbs"><a href="#/">الرئيسية</a> ← المركبات</div>
       <h1>المركبات والحمولات</h1>
-      <p>اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة وسنراجع معك الاختيار هاتفياً قبل التأكيد.</p>
+      <p>اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة، وستتمكن من مراجعة اختيارك داخل المنصة قبل التأكيد.</p>
     </div>
   </div>
   <div class="section">
@@ -1162,9 +1592,9 @@ img.offer-stamp.stamp-img{width:208px}
     <div class="wrap">
       <div class="timeline">
         <div class="tl-item"><div class="tl-dot">1</div><div><h3>ترسل طلب النقل</h3><p>من صفحة «طلب جديد»: نوع الشحنة، الشاحنة، المسار، تفاصيل البضاعة، الجدول، ورقم هاتفك. عند التأكيد يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب فوراً.</p></div></div>
-        <div class="tl-item"><div class="tl-dot">2</div><div><h3>نراجع ونطابق طلبك مع ناقل</h3><p>فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نتصل بك هاتفياً لاستكمالها.</p></div></div>
+        <div class="tl-item"><div class="tl-dot">2</div><div><h3>نراجع ونطابق طلبك مع ناقل</h3><p>فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نطلبها منك داخل المنصة عبر طلبك لاستكمالها.</p></div></div>
         <div class="tl-item"><div class="tl-dot">3</div><div><h3>الاستلام والنقل</h3><p>يصل الناقل إلى نقطة الاستلام في الموعد، تُحمَّل البضاعة، وتنطلق نحو وجهتها. نبقى على تواصل مع الطرفين طوال الرحلة.</p></div></div>
-        <div class="tl-item"><div class="tl-dot">4</div><div><h3>التسليم والتأكيد</h3><p>عند وصول البضاعة، يؤكّد المستلم الاستلام ونؤكّد معك إتمام الطلب هاتفياً. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.</p></div></div>
+        <div class="tl-item"><div class="tl-dot">4</div><div><h3>التسليم والتأكيد</h3><p>عند وصول البضاعة، يُؤكَّد التسليم داخل المنصة برمز التأكيد الذي يعرضه المستلم للسائق، وبذلك يكتمل طلبك. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.</p></div></div>
       </div>
       <div class="card" style="margin-top:22px"><h3>عروض بنفس المركبة أو بمركبة مشابهة</h3><p>بعد إطلاق طلبك، يصل عرضك إلى السائقين الذين يملكون نفس المركبة التي طلبتها — فطلب هاربين مثلاً يصل إلى سائقي الهاربين — ويصل أيضاً إلى سائقين بمركبة مشابهة في الحمولة، أكبر أو أصغر بقليل فقط وقريبة من الحجم الذي طلبته، مثل مركبة ثلاثية العجلات أو مركبة أكبر قليلاً. الاختيار يبقى لك: كل عرض يصلك تظهر فيه صورة المركبة ونوعها، وإذا وافقت على أحد العروض يُستكمل طلبك مع ذلك السائق.</p></div>
     </div>
@@ -1210,14 +1640,14 @@ img.offer-stamp.stamp-img{width:208px}
       </div>
       <div class="grid g2">
         <div class="card price-card">
-          <span class="tag">للسائقين — عبر التطبيق</span>
+          <span class="tag">للسائقين</span>
           <div class="big">0% عمولة</div>
           <h3 style="margin-top:6px">شهر كامل بدون عمولة</h3>
-          <p>السائقون الذين يسجلون في تطبيق كاميوني على Google Play من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.</p>
+          <p>السائقون الذين يسجلون في كاميوني — من هذا الموقع بزر «سجل كسائق» أو من التطبيق على Google Play — من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.</p>
           <ul class="tick-list" style="text-align:start">
             <li><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> كل أرباحك تبقى لك طوال الشهر</li>
             <li><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> أولوية في استقبال الطلبات</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> التسجيل من التطبيق مباشرة</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="#1eb85c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> التسجيل من الموقع أو التطبيق مباشرة</li>
           </ul>
         </div>
         <div class="card price-card">
@@ -1256,14 +1686,14 @@ img.offer-stamp.stamp-img{width:208px}
   </div>
   <div class="section">
     <div class="wrap" style="max-width:860px">
-      <details class="faq-item"><summary>كيف أطلب نقل بضاعة؟<span class="arr">+</span></summary><div class="faq-body">من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم يتصل بك فريقنا هاتفياً لتأكيد الناقل.</div></details>
+      <details class="faq-item"><summary>كيف أطلب نقل بضاعة؟<span class="arr">+</span></summary><div class="faq-body">من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم تصلك عروض السائقين داخل المنصة، ويتواصل معك السائق الذي تختاره مباشرة للتأكيد.</div></details>
       <details class="faq-item"><summary>هل أحتاج إلى تحميل تطبيق؟<span class="arr">+</span></summary><div class="faq-body">لا. خدمة الطلب تعمل كاملة من داخل هذا الموقع، بدون حساب وبدون تحميل وبدون واتساب. تطبيق كاميوني متوفر على Google Play ويضيف مزايا إضافية، لكنه ليس شرطاً للطلب اليوم.</div></details>
       <details class="faq-item"><summary>ما هي الولايات المغطاة؟<span class="arr">+</span></summary><div class="faq-body">نغطي كل ولايات الجزائر الـ69: نقل داخل نفس الولاية، ونقل بين الولايات لأي مسافة — من الشمال إلى الجنوب ومن الشرق إلى الغرب.</div></details>
       <details class="faq-item"><summary>ما أنواع البضائع التي يمكن نقلها؟<span class="arr">+</span></summary><div class="faq-body">تقريباً كل شيء قانوني وقابل للتحميل: أثاث وعفش منازل، مواد غذائية، مواد بناء، طرود وبضائع تجارية، أجهزة كهرومنزلية ومعدات مهنية، وشحنات صناعية حتى 60 طن. اذكر نوع بضاعتك بدقة في الطلب وسنقترح المركبة المناسبة.</div></details>
       <details class="faq-item"><summary>كيف أختار المركبة المناسبة لبضاعتي؟<span class="arr">+</span></summary><div class="faq-body">حسب الوزن والحجم: حتى 1 طن فورغون، حتى 3.5 طن شاحنة صغيرة مكشوفة، وحتى 40 طن شاحنة حاوية. وإذا اخترت «غير متأكد» في نموذج الطلب، يقترح عليك فريقنا الفئة الصحيحة قبل التأكيد.</div></details>
-      <details class="faq-item"><summary>كم يستغرق الرد على طلبي؟<span class="arr">+</span></summary><div class="faq-body">طلبك يُسجَّل داخل المنصة فوراً. نراجعه ونتصل بك بالتأكيد في أقرب وقت ممكن خلال أوقات العمل، وكلما كان وصف الطلب أدق كان الرد أسرع.</div></details>
-      <details class="faq-item"><summary>كيف أتابع بضاعتي أثناء النقل؟<span class="arr">+</span></summary><div class="faq-body">يبقى فريق كاميوني على تواصل هاتفي معك من الاستلام حتى التسليم: نعلمك عند انطلاق الناقل، ونتابع معك وصول البضاعة، ونؤكّد التسليم مع المستلم.</div></details>
-      <details class="faq-item"><summary>أنا سائق وأريد العمل مع كاميوني، كيف أنضم؟<span class="arr">+</span></summary><div class="faq-body">تسجيل السائقين يتم مباشرة من تطبيق كاميوني على Google Play — لن تحتاج هذا الموقع للتسجيل. المنضمون الأوائل عبر التطبيق يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.</div></details>
+      <details class="faq-item"><summary>كم يستغرق الرد على طلبي؟<span class="arr">+</span></summary><div class="faq-body">طلبك يُسجَّل داخل المنصة فوراً، وتصلك عروض السائقين مباشرة على المنصة لتختار وتؤكّد بنفسك، وكلما كان وصف الطلب أدق وصلتك العروض أسرع.</div></details>
+      <details class="faq-item"><summary>كيف أتابع بضاعتي أثناء النقل؟<span class="arr">+</span></summary><div class="faq-body">تتابع بضاعتك داخل المنصة من الاستلام حتى التسليم: يصلك إشعار مباشرة من السائق عند انطلاقه وعند وصول البضاعة، ويبقى السائق على تواصل معك طوال الرحلة، ويُؤكَّد التسليم داخل المنصة.</div></details>
+      <details class="faq-item"><summary>أنا سائق وأريد العمل مع كاميوني، كيف أنضم؟<span class="arr">+</span></summary><div class="faq-body">تسجيل السائقين يتم من هذا الموقع نفسه: اضغط زر «سجل كسائق» في الصفحة الرئيسية، عبّئ بياناتك، أكّد رقمك برمز يصلك على واتساب، وارفَع وثائقك — يراجع فريقنا ملفك ويعتمد حسابك إذا كانت وثائقك سليمة، ويمكنك التسجيل أيضاً من تطبيق كاميوني على Google Play. المنضمون الأوائل يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.</div></details>
       <details class="faq-item"><summary>هل يمكنني إلغاء أو تعديل طلبي؟<span class="arr">+</span></summary><div class="faq-body">نعم، ما دام الناقل لم ينطلق بعد: اتصل بنا على الرقم 0795 31 80 16 وسنعدّل التفاصيل أو نلغي الطلب.</div></details>
       <div class="center-cta" style="margin-top:30px">
         <h3 style="font-size:1.25rem;font-weight:900">ما زال عندك سؤال؟</h3>
@@ -1535,13 +1965,13 @@ img.offer-stamp.stamp-img{width:208px}
 
           <div class="wstep" data-step="5">
             <h3 class="wstep-title">معلومات</h3>
-            <p class="wstep-hint">اكتب رقم هاتفك ليتمكن الناقل وفريق كاميوني من التواصل معك بخصوص طلبك</p>
+            <p class="wstep-hint">اكتب رقم هاتفك ليتمكن الناقل من التواصل معك بخصوص طلبك</p>
             <div class="field" id="f-phone">
               <label for="oPhone">رقم الهاتف <span class="req">*</span></label>
               <div class="phone-wrap">
                 <input type="tel" id="oPhone" placeholder="05 50 12 34 56" autocomplete="tel" inputmode="tel" />
               </div>
-              <span class="err">أدخل رقماً جزائرياً صحيحاً: 10 أرقام تبدأ بـ 05 أو 06 أو 07.</span>
+              <span class="err">أدخل رقماً جزائرياً صحيحاً — كل الصيغ مقبولة: 05… أو +213… أو 00213… أو 213…</span>
               <span class="verify-err" id="sendCodeErr" role="alert"></span>
             </div>
             <button type="submit" class="btn btn-orange" id="orderSubmitBtn" style="width:100%;font-size:1.08rem">إرسال الطلب</button>
@@ -1557,11 +1987,11 @@ img.offer-stamp.stamp-img{width:208px}
                 <input type="text" class="otp-digit" inputmode="numeric" maxlength="1" aria-label="خانة الرقم 3" />
                 <input type="text" class="otp-digit" inputmode="numeric" maxlength="1" aria-label="خانة الرقم 4" />
               </div>
-              <span class="verify-err" id="otpErr">أدخل الرمز كاملاً من 4 أرقام.</span>
+              <span class="verify-err" id="otpErr">أدخل الأرقام الأربعة كاملة.</span>
               <button type="button" class="otp-confirm" id="otpConfirmBtn">تأكيد وإرسال الطلب</button>
               <button type="button" class="otp-resend" id="otpResendBtn">إرسال رمز جديد</button>
             </div>
-            <div class="success-box" id="orderSuccess" style="margin-top:18px"><h3>تم استلام طلبك بنجاح</h3><p style="font-size:1.06rem">رقم طلبك: <b id="orderRef" dir="ltr" style="color:#0d6e38">—</b></p><p>طلبك مسجّل الآن داخل المنصة. سيتصل بك فريق كاميوني على رقم هاتفك لتأكيد الناقل — احتفظ برقم الطلب لمتابعته.</p><button type="button" class="btn btn-navy btn-sm" id="orderNew" style="margin-top:12px">إرسال طلب آخر</button></div>
+            <div class="success-box" id="orderSuccess" style="margin-top:18px"><h3>عروض السائقين تصل الآن</h3><p style="font-size:1.06rem">رقم طلبك: <b id="orderRef" dir="ltr" style="color:#0d6e38">—</b></p><div class="offers-panel" id="offersPanel"><div class="offers-waiting" id="offersWaiting"><span class="offers-spinner" aria-hidden="true"></span><p>طلبك أُرسل إلى السائقين، والعروض تصل الآن — ستظهر هنا مباشرة فور وصولها.</p></div><div class="offers-list" id="offersList"></div></div><p class="offers-note">ستصلك العروض والإشعارات مباشرة من السائقين، وليس من كاميوني. كاميوني لا تتواصل معك إلا في حالة نزاع أو مشكلة أو عطل.</p><button type="button" class="btn btn-navy btn-sm" id="orderNew" style="margin-top:12px">إرسال طلب آخر</button></div>
           </div>
 
           <div class="wnav">
@@ -1830,6 +2260,111 @@ img.offer-stamp.stamp-img{width:208px}
   </div>
 </div>
 
+<!-- نافذة تسجيل السائق: تفتح داخل الموقع من زر «سجل كسائق»، بلا أي تحويل خارجي.
+     البلدية قائمة مسدلة تابعة للولاية المختارة من القائمة الرسمية (نفس قوائم الطلب). -->
+<div class="drv-modal" id="driverModal" hidden role="dialog" aria-modal="true" aria-labelledby="driverTitle">
+  <div class="drv-box">
+    <button type="button" class="support-close" id="driverClose" aria-label="إغلاق">×</button>
+    <h3 id="driverTitle">تسجيل سائق جديد</h3>
+    <p class="drv-sub">خطوات قصيرة — أكملها من هاتفك في دقائق.</p>
+    <div class="drv-progress" id="drvProgress">
+      <div class="p on" data-p="1">1 · البيانات</div>
+      <div class="p" data-p="2">2 · رمز واتساب</div>
+      <div class="p" data-p="3">3 · الوثائق</div>
+      <div class="p" data-p="4">4 · تم الإرسال</div>
+    </div>
+
+    <!-- المرحلة 1: البيانات -->
+    <form class="drv-pane" id="drvPane1" novalidate>
+      <div class="form-2col">
+        <div class="field" id="df-last">
+          <label for="dLast">اللقب <span class="req">*</span></label>
+          <input type="text" id="dLast" autocomplete="family-name" placeholder="مثال: بن عيسى" />
+          <span class="err">أدخل اللقب من فضلك.</span>
+        </div>
+        <div class="field" id="df-first">
+          <label for="dFirst">الاسم <span class="req">*</span></label>
+          <input type="text" id="dFirst" autocomplete="given-name" placeholder="مثال: محمد" />
+          <span class="err">أدخل الاسم من فضلك.</span>
+        </div>
+      </div>
+      <div class="field" id="df-phone">
+        <label for="dPhone">رقم الهاتف (واتساب) <span class="req">*</span></label>
+        <input type="tel" id="dPhone" inputmode="tel" autocomplete="tel" placeholder="05 / 06 / 07 … أو +213" />
+        <span class="err">أدخل رقم هاتف صحيحاً — سيصلك عليه رمز التحقق.</span>
+      </div>
+      <div class="form-2col">
+        <div class="field" id="df-wilaya">
+          <label for="dWilaya">الولاية <span class="req">*</span></label>
+          <select id="dWilaya" class="wilaya-select"><option value="">— اختر الولاية —</option></select>
+          <span class="err">اختر ولايتك من فضلك.</span>
+        </div>
+        <div class="field" id="df-commune">
+          <label for="dCommune">البلدية <span class="req">*</span></label>
+          <select id="dCommune" class="commune-select" data-wilaya="dWilaya" disabled><option value="">اختر الولاية أولاً</option></select>
+          <span class="err">اختر بلديتك من القائمة من فضلك.</span>
+        </div>
+      </div>
+      <div class="field" id="df-vehicle">
+        <label for="dVehicle">نوع المركبة <span class="req">*</span></label>
+        <select id="dVehicle"><option value="">— اختر نوع مركبتك —</option></select>
+        <span class="err">اختر نوع المركبة من فضلك.</span>
+      </div>
+      <label class="drv-declare" id="dd-car">
+        <input type="checkbox" id="dHasCar" />
+        <span>نعم، لديّ مركبة</span>
+      </label>
+      <label class="drv-declare" id="dd-lic">
+        <input type="checkbox" id="dHasLic" />
+        <span>نعم، لديّ رخصة قيادة صالحة لمدة سنتين على الأقل</span>
+      </label>
+      <p class="drv-line-err" id="drvSendErr" style="margin:0 0 10px"></p>
+      <button type="submit" class="btn btn-orange drv-wide" id="drvRegisterBtn">سجّل الآن</button>
+      <p class="drv-terms">بالضغط على «سجّل الآن» أنت توافق على شروط الاستخدام.</p>
+    </form>
+
+    <!-- المرحلة 2: رمز واتساب من 4 أرقام -->
+    <div class="drv-pane" id="drvPane2" hidden>
+      <div class="drv-sent">أرسلنا رمزاً من 4 أرقام إلى واتساب الرقم <b id="drvSentPhone" dir="ltr"></b></div>
+      <p class="drv-center" style="margin-top:0">أدخل الرمز هنا لتأكيد رقمك:</p>
+      <div class="otp-row" id="drvOtpRow">
+        <input class="otp-digit drv-digit" type="tel" inputmode="numeric" autocomplete="one-time-code" aria-label="الرقم 1" />
+        <input class="otp-digit drv-digit" type="tel" inputmode="numeric" aria-label="الرقم 2" />
+        <input class="otp-digit drv-digit" type="tel" inputmode="numeric" aria-label="الرقم 3" />
+        <input class="otp-digit drv-digit" type="tel" inputmode="numeric" aria-label="الرقم 4" />
+      </div>
+      <p class="drv-line-err" id="drvOtpErr"></p>
+      <div class="drv-foot">
+        <button type="button" class="btn btn-ghost" id="drvBack1">رجوع</button>
+        <button type="button" class="btn btn-orange" id="drvConfirmBtn">تأكيد الرقم</button>
+      </div>
+      <p class="drv-center" style="margin:8px 0 0">لم يصلك الرمز؟ <button type="button" class="drv-linklike" id="drvResend">إرسال رمز جديد</button></p>
+    </div>
+
+    <!-- المرحلة 3: الوثائق الخمس -->
+    <div class="drv-pane" id="drvPane3" hidden>
+      <p style="margin-top:0">رقمك مؤكَّد ✓ — الآن صوّر وثائقك بالكاميرا أو اخترها من هاتفك:</p>
+      <div id="drvDocs"></div>
+      <p style="color:var(--muted);font-size:.88rem;font-weight:700;margin:4px 0 0">تأكد أن الصور واضحة ومقروءة — المراجعة تعتمد عليها لاعتماد حسابك.</p>
+      <p class="drv-line-err" id="drvDocErr"></p>
+      <div class="drv-foot">
+        <button type="button" class="btn btn-orange" id="drvSubmitBtn" disabled>إرسال الملف للمراجعة</button>
+      </div>
+    </div>
+
+    <!-- المرحلة 4: تم الإرسال -->
+    <div class="drv-pane drv-center" id="drvPane4" hidden>
+      <div class="drv-ok-ic">✓</div>
+      <h3 style="margin:0 0 6px;padding:0">تم إرسال ملفك بنجاح</h3>
+      <p style="color:var(--muted);margin:0 auto 6px;max-width:400px">وصل ملفك إلى فريق كاميوني وهو الآن بانتظار المراجعة. إذا كانت وثائقك سليمة سنعتمد حسابك ويُفتح لك مباشرة، ويصلك إشعار بذلك على واتساب.</p>
+      <div class="drv-foot">
+        <button type="button" class="btn btn-navy" id="drvDoneBtn">إغلاق</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- زر واتساب عائم -->
 <a class="wa-float" href="https://wa.me/213795318016?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%B9%D9%86%D8%AF%D9%8A%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D9%86%D9%82%D9%84%20%D8%A8%D8%B6%D8%A7%D8%B9%D8%A9%20%D8%B9%D8%A8%D8%B1%20%D9%83%D8%A7%D9%85%D9%8A%D9%88%D9%86%D9%8A." target="_blank" rel="noopener" aria-label="تواصل معنا عبر واتساب">
   <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.4-.7-2.9-1.2-4.7-4.1-4.9-4.3-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .6l-.4.6-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.4 1.8 2.2 1.2 1.1 2.3 1.5 2.6 1.6.3.1.5.1.7-.1l1-1.2c.2-.3.4-.2.7-.1l2.1 1c.3.2.5.3.6.4 0 .1 0 .7-.2 1.2Z"/></svg>
@@ -1849,13 +2384,13 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
      كل الصور حقيقية، بنفس الحجم (1000×540)، في الوسط، وكلها في نفس الاتجاه. */
   var FLEET_GROUPS = [
     {title:"الفورغونات والمركبات المغلقة", color:"#8fb8e8", items:[
-      {img:"fleet-van-long", name:"فورغون طويل", cap:"حتى 1.86 طن", desc:"صندوق مغلق واسع للأثاث والبضائع كبيرة الحجم.", veh:"van"},
-      {img:"fleet-van-short", name:"فورغون قصير", cap:"حتى 1.5 طن", desc:"مثالي للتوصيل السريع داخل المدينة والطرود المتوسطة.", veh:"van"},
-      {img:"fleet-van-standard", name:"فورغون عادي", cap:"حتى 730 كغ", desc:"الخيار المتوازن لنقل الأثاث والبضائع التجارية اليومية.", veh:"van"},
-      {img:"fleet-changhe-box", name:"شانغي صندوق", cap:"حتى 985 كغ", desc:"صندوق صغير عملي لبضائع المحلات والتوزيع اليومي.", veh:"van"}
+      {img:"fleet-van-long", name:"فورغون طويل", cap:"حتى 1.86 طن", desc:"صندوق مغلق واسع للأثاث والبضائع كبيرة الحجم.", veh:"van-long"},
+      {img:"fleet-van-short", name:"فورغون قصير", cap:"حتى 1.5 طن", desc:"مثالي للتوصيل السريع داخل المدينة والطرود المتوسطة.", veh:"van-short"},
+      {img:"fleet-van-standard", name:"فورغون عادي", cap:"حتى 730 كغ", desc:"الخيار المتوازن لنقل الأثاث والبضائع التجارية اليومية.", veh:"van-standard"},
+      {img:"fleet-changhe-box", name:"شانغي صندوق", cap:"حتى 985 كغ", desc:"صندوق صغير عملي لبضائع المحلات والتوزيع اليومي.", veh:"changhe"}
     ]},
     {title:"المركبات الخفيفة — هاربين", color:"#8fd0a0", items:[
-      {img:"fleet-harbin-single", name:"هاربين مكشوفة", cap:"حتى 3.5 طن", desc:"هاربين عملي لحمولات الورشات والمواد الخفيفة.", veh:"truck-s"},
+      {img:"fleet-harbin-single", name:"هاربين مكشوفة", cap:"حتى 3.5 طن", desc:"هاربين عملي لحمولات الورشات والمواد الخفيفة.", veh:"harbin-open"},
       {img:"fleet-harbin-double", name:"هاربين كابينة مزدوجة", cap:"حتى 1.5 طن", desc:"كابينة مزدوجة تنقل فريق العمل والحمولة معاً.", veh:"truck-s"},
       {img:"fleet-harbin-covered", name:"هاربين مغطاة", cap:"حتى 3.5 طن", desc:"هاربين صغير بصندوق مغطى بقماش يحمي البضاعة من الغبار والمطر.", veh:"harbin-covered"},
       {img:"fleet-trike", name:"مركبة ثلاثية العجلات", cap:"حتى 800 كغ", desc:"صندوق خلفي واسع للبضائع الخفيفة والتوصيل السريع داخل المدينة والأحياء الضيقة.", veh:"trike"}
@@ -1863,7 +2398,7 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     {title:"شاحنات النقل", color:"#ffbe8f", items:[
       {img:"fleet-sided", name:"شاحنة بجوانب", cap:"حتى 5 طن", desc:"جوانب مفتوحة تناسب مواد البناء والبضائع كبيرة الحجم.", veh:"sided"},
       {img:"fleet-flatbed", name:"شاحنة مسطحة", cap:"حتى 16 طن", desc:"سطح مفتوح للمعدات الطويلة والحمولات الثقيلة.", veh:"flatbed"},
-      {img:"fleet-flatbed-trailer", name:"شاحنة بمقطورة مفتوحة", cap:"حتى 40 طن", desc:"مقطورة بسطح مفتوح لنقل المعدات الطويلة والحمولات الثقيلة لمسافات طويلة.", veh:"semi"},
+      {img:"fleet-flatbed-trailer", name:"شاحنة بمقطورة مفتوحة", cap:"حتى 40 طن", desc:"مقطورة بسطح مفتوح لنقل المعدات الطويلة والحمولات الثقيلة لمسافات طويلة.", veh:"flatbed-trailer"},
       {img:"fleet-container", name:"شاحنة حاوية", cap:"حتى 40 طن", desc:"لنقل الحاويات والشحنات القادمة من الموانئ.", veh:"semi"}
     ]},
     {title:"شاحنات القلاب", color:"#d9b38c", items:[
@@ -1871,30 +2406,30 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
       {img:"fleet-dump-shacman", name:"شاحنة قلاب شاكمان", cap:"حتى 30 طن", desc:"قلاب قوي مخصص لحمولات الأشغال الثقيلة.", veh:"shacman"}
     ]},
     {title:"الشاحنات المبردة", color:"#7cc3e6", items:[
-      {img:"fleet-refrigerated-small", name:"شاحنة مبردة صغيرة", cap:"حتى 3.5 طن", desc:"صندوق مبرد صغير للتوصيل السريع للمواد الغذائية والأدوية داخل المدينة.", veh:"truck-s"},
-      {img:"fleet-refrigerated-medium", name:"شاحنة مبردة متوسطة", cap:"حتى 4 طن", desc:"تبريد متواصل للمواد الغذائية والأدوية أثناء النقل.", veh:""},
-      {img:"fleet-refrigerated-large", name:"شاحنة مبردة نصف مقطورة كبيرة", cap:"حتى 40 طن", desc:"مقطورة مبردة طويلة للشحنات الغذائية والدوائية الكبيرة والمسافات الطويلة.", veh:"semi"}
+      {img:"fleet-refrigerated-small", name:"شاحنة مبردة صغيرة", cap:"حتى 3.5 طن", desc:"صندوق مبرد صغير للتوصيل السريع للمواد الغذائية والأدوية داخل المدينة.", veh:"fridge-small"},
+      {img:"fleet-refrigerated-medium", name:"شاحنة مبردة متوسطة", cap:"حتى 4 طن", desc:"تبريد متواصل للمواد الغذائية والأدوية أثناء النقل.", veh:"fridge-medium"},
+      {img:"fleet-refrigerated-large", name:"شاحنة مبردة نصف مقطورة كبيرة", cap:"حتى 40 طن", desc:"مقطورة مبردة طويلة للشحنات الغذائية والدوائية الكبيرة والمسافات الطويلة.", veh:"fridge-large"}
     ]},
     {title:"الصهاريج", color:"#8fcedd", items:[
-      {img:"fleet-water-tanker", name:"صهريج ماء", cap:"حتى 20.000 لتر", desc:"لنقل المياه وتوصيلها إلى المنازل والورشات والمناطق النائية.", veh:""},
-      {img:"fleet-fuel-tanker", name:"صهريج وقود", cap:"حتى 35.000 لتر", desc:"لنقل الوقود والمحروقات بأمان إلى محطات التوزيع والورشات.", veh:""},
-      {img:"fleet-sewer", name:"شاحنة شفط المجاري", cap:"حتى 6.000 لتر", desc:"لشفط وتنظيف قنوات الصرف الصحي والمجاري.", veh:""}
+      {img:"fleet-water-tanker", name:"صهريج ماء", cap:"حتى 20.000 لتر", desc:"لنقل المياه وتوصيلها إلى المنازل والورشات والمناطق النائية.", veh:"water-tanker"},
+      {img:"fleet-fuel-tanker", name:"صهريج وقود", cap:"حتى 35.000 لتر", desc:"لنقل الوقود والمحروقات بأمان إلى محطات التوزيع والورشات.", veh:"fuel-tanker"},
+      {img:"fleet-sewer", name:"شاحنة شفط المجاري", cap:"حتى 6.000 لتر", desc:"لشفط وتنظيف قنوات الصرف الصحي والمجاري.", veh:"sewer"}
     ]},
     {title:"السحب ومركبات الأشغال", color:"#f2a49c", items:[
-      {img:"fleet-tow-medium", name:"شاحنة سحب متوسطة", capLabel:"أقصى سحب", cap:"حتى 16 طن", desc:"لسحب وجرّ الشاحنات والمركبات المتوسطة عند الأعطال.", veh:"truck-s"},
-      {img:"fleet-tow-light", name:"شاحنة رفع خفيفة", cap:"حتى 3 طن", desc:"ترفع السيارات والمركبات الخفيفة فوق سطحها وتنقلها كاملة بأمان.", veh:"truck-s"},
-      {img:"fleet-car-carrier", name:"ناقلة سيارات", cap:"حتى 40 طن", desc:"مقطورة بطابقين لنقل السيارات الجديدة والمستعملة بأمان بين الولايات والمعارض.", veh:"semi"}
+      {img:"fleet-tow-medium", name:"شاحنة سحب متوسطة", capLabel:"أقصى سحب", cap:"حتى 16 طن", desc:"لسحب وجرّ الشاحنات والمركبات المتوسطة عند الأعطال.", veh:"tow-medium"},
+      {img:"fleet-tow-light", name:"شاحنة رفع خفيفة", cap:"حتى 3 طن", desc:"ترفع السيارات والمركبات الخفيفة فوق سطحها وتنقلها كاملة بأمان.", veh:"tow-light"},
+      {img:"fleet-car-carrier", name:"ناقلة سيارات", cap:"حتى 40 طن", desc:"مقطورة بطابقين لنقل السيارات الجديدة والمستعملة بأمان بين الولايات والمعارض.", veh:"car-carrier"}
     ]},
     {title:"مركبات الأشغال العمومية", color:"#ecd28a", items:[
-      {img:"fleet-concrete-pump", name:"شاحنة مضخة خرسانة", capLabel:"أقصى ضخ", cap:"حتى 120 م³/ساعة", desc:"لضخ الخرسانة مباشرة في مواقع البناء.", veh:"semi"},
-      {img:"fleet-forklift", name:"رافعة شوكية", note:"عدة أنواع متوفرة", desc:"لرفع وتحميل البضائع الثقيلة والطبالي في المخازن ومواقع العمل.", veh:""},
-      {img:"fleet-equipment", name:"ناقل معدات", cap:"حتى 60 طن", desc:"مقطورة منخفضة لنقل المعدات الثقيلة وآليات الأشغال مثل الحفارات والجرافات.", veh:"semi"}
+      {img:"fleet-concrete-pump", name:"شاحنة مضخة خرسانة", capLabel:"أقصى ضخ", cap:"حتى 120 م³/ساعة", desc:"لضخ الخرسانة مباشرة في مواقع البناء.", veh:"concrete-pump"},
+      {img:"fleet-forklift", name:"رافعة شوكية", note:"عدة أنواع متوفرة", desc:"لرفع وتحميل البضائع الثقيلة والطبالي في المخازن ومواقع العمل.", veh:"forklift"},
+      {img:"fleet-equipment", name:"ناقل معدات", cap:"حتى 60 طن", desc:"مقطورة منخفضة لنقل المعدات الثقيلة وآليات الأشغال مثل الحفارات والجرافات.", veh:"equipment"}
     ]}
   ];
   function fleetCard(v, famColor){
     return '<div class="card veh-card fleet-card" style="--fam:' + famColor + '"><div class="veh-art fleet-art"><img src="assets/' + v.img + '.webp" alt="' + v.name + '" width="1000" height="540" loading="lazy" decoding="async" /></div>' +
-      '<h3>' + v.name + '</h3>' + (v.cap ? '<p class="veh-cap"><span>' + (v.capLabel || 'أقصى حمولة') + '</span> <b>' + v.cap + '</b></p>' : '') + (v.note ? '<p class="veh-cap"><b>' + v.note + '</b></p>' : '') + '<p>' + v.desc + '</p>' +
-      '<a class="btn btn-orange btn-sm" href="#/order" data-veh="' + v.veh + '" style="margin-top:16px">اطلب هذه المركبة</a></div>';
+      '<h3>' + v.name + '</h3>' + (v.cap ? '<p class="veh-cap"><span>' + (v.capLabel || 'أقصى حمولة') + '</span> <b>' + v.cap + '</b></p>' : '') + (v.note ? '<p class="veh-cap"><b>' + v.note + '</b></p>' : '') + '<p style="margin-bottom:16px">' + v.desc + '</p>' +
+      '<a class="btn btn-orange btn-sm" href="#/order" data-veh="' + v.veh + '" style="margin-top:auto">اطلب هذه المركبة</a></div>';
   }
   /* في الصفحة الرئيسية: مركبة واحدة مختارة فقط من كل عائلة (الأكثر تمثيلاً لها)،
      والباقي في صفحة الأسطول الكاملة. الفهارس حسب ترتيب كل عائلة أعلاه. */
@@ -1908,17 +2443,116 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     [1], /* السحب والأشغال: شاحنة رفع خفيفة */
     [0]  /* الأشغال العمومية: مضخة الخرسانة */
   ];
+  /* شريط الأسطول المتحرك في الرئيسية: يتقدّم شريحة واحدة كل 5 ثوانٍ نحو اليسار،
+     في حلقة مستمرة (نسخة مكررة من البطاقات تلي الأصلية، فعند تجاوز الأخيرة يقفز
+     الشريط بلا حركة مرئية إلى البداية المطابقة تماماً)، يتوقف عند التحويم أو
+     التركيز داخله، ويستأنف عند الابتعاد. سهمان فقط: السابق يساراً والتالي يميناً. */
+  function initFleetCarousel(car){
+    if (!car) return;
+    var track = car.querySelector(".fc-track");
+    if (!track || track.children.length < 2) return;
+    var total = track.children.length / 2;
+    var idx = 0, timer = null, jumping = false, hovered = false, focused = false, visTimer = null;
+    var reduced = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    function slideW(){ var s = track.children[0]; return s ? s.getBoundingClientRect().width : 0; }
+    function perView(){
+      var vp = car.querySelector(".fc-viewport");
+      var w = slideW();
+      if (!vp || !w) return 1;
+      return Math.max(1, Math.round(vp.clientWidth / w));
+    }
+    /* الشرائح خارج نافذة العرض تُخفى بـ visibility: بطاقاتها مقصوصة أصلاً
+       بمربع العرض، فلا تبقى روابطها عناصر «مقصوصة» يتعذّر الوصول إليها،
+       ولا تدخل في التنقّل بلوحة المفاتيح. أثناء الحركة يبقى مدى الموضعين
+       (المغادر والقادم) ظاهراً حتى لا تومض البطاقات، ثم يُحسم بعد 600ms. */
+    function setVis(from, to){
+      if (!slideW()) {
+        for (var q = 0; q < track.children.length; q++) track.children[q].style.visibility = "";
+        return;
+      }
+      var pv = perView();
+      var lo = Math.min(from, to), hi = Math.max(from, to) + pv - 1;
+      for (var p = 0; p < track.children.length; p++){
+        var on = p >= lo && p <= hi;
+        var s = track.children[p];
+        s.style.visibility = on ? "" : "hidden";
+        if (on) { if (p < total) s.removeAttribute("aria-hidden"); }
+        else s.setAttribute("aria-hidden", "true");
+        /* روابط الشرائح الأصلية خارج نافذة العرض تُسحب أيضاً من التنقّل
+           بلوحة المفاتيح (tabindex=-1) ما دامت مخفية، وتعود قابلة للوصول
+           فور دخول شريحتها نافذة العرض — مثل روابط النسخ المكررة تماماً. */
+        if (p < total) {
+          var lnks = s.querySelectorAll("a[href], button");
+          for (var li = 0; li < lnks.length; li++){
+            if (on) lnks[li].removeAttribute("tabindex");
+            else lnks[li].setAttribute("tabindex", "-1");
+          }
+        }
+      }
+    }
+    function settleVis(){ setVis(idx, idx); }
+    function apply(animate){
+      if (!slideW()) return;
+      if (!animate) track.classList.add("fc-noanim");
+      track.style.transform = "translateX(" + (-idx * slideW()) + "px)";
+      if (!animate){ void track.offsetHeight; track.classList.remove("fc-noanim"); }
+    }
+    function step(dir){
+      if (jumping || !slideW()) return;
+      var prev = idx;
+      clearTimeout(visTimer);
+      if (dir > 0){
+        idx++;
+        setVis(prev, idx);
+        apply(true);
+        if (idx >= total){
+          jumping = true;
+          setTimeout(function(){ idx = 0; apply(false); settleVis(); jumping = false; }, 600);
+        } else {
+          visTimer = setTimeout(settleVis, 600);
+        }
+      } else if (idx <= 0){
+        idx = total; apply(false); settleVis();
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){
+          var p2 = idx;
+          idx = total - 1;
+          setVis(p2, idx);
+          apply(true);
+          clearTimeout(visTimer);
+          visTimer = setTimeout(settleVis, 600);
+        }); });
+      } else { idx--; setVis(prev, idx); apply(true); visTimer = setTimeout(settleVis, 600); }
+    }
+    function start(){ stop(); if (reduced || hovered || focused) return; timer = setInterval(function(){ step(1); }, 5000); }
+    function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+    car.addEventListener("mouseenter", function(){ hovered = true; stop(); });
+    car.addEventListener("mouseleave", function(){ hovered = false; start(); });
+    car.addEventListener("focusin", function(){ focused = true; stop(); });
+    car.addEventListener("focusout", function(e){ if (e.relatedTarget && car.contains(e.relatedTarget)) return; focused = false; start(); });
+    car.querySelector(".fc-btn-next").addEventListener("click", function(){ step(1); start(); });
+    car.querySelector(".fc-btn-prev").addEventListener("click", function(){ step(-1); start(); });
+    window.addEventListener("resize", function(){ apply(false); settleVis(); });
+    settleVis();
+    start();
+  }
   function renderFleet(el, preview){
     if (!el) return;
     if (preview) {
-      /* الرئيسية فقط: المركبات المختارة من كل العائلات في شبكة واحدة
-         موحّدة، بلا عناوين عائلات، ثلاث بطاقات في كل صف. */
+      /* الرئيسية فقط: المركبات المختارة من كل العائلات في شريط تمرير متحرك
+         واحد، بلا عناوين عائلات، والبطاقات نفسها كما هي تماماً. */
       var cards = [];
       FLEET_GROUPS.forEach(function(g, gi){
         var picks = HOME_PICKS[gi] || [0];
         picks.forEach(function(i){ if (g.items[i]) cards.push(fleetCard(g.items[i], g.color)); });
       });
-      el.innerHTML = '<div class="grid fleet-grid fleet-grid-home">' + cards.join("") + '</div>';
+      var slides = cards.map(function(c){ return '<div class="fc-slide">' + c + '</div>'; });
+      var dup = cards.map(function(c){ return '<div class="fc-slide" aria-hidden="true">' + c.replace('<a class="btn', '<a tabindex="-1" class="btn') + '</div>'; });
+      el.innerHTML = '<div class="fleet-carousel">' +
+        '<div class="fc-viewport"><div class="fc-track">' + slides.join("") + dup.join("") + '</div></div>' +
+        '<button type="button" class="fc-btn fc-btn-prev" aria-label="السابق"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg></button>' +
+        '<button type="button" class="fc-btn fc-btn-next" aria-label="التالي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg></button>' +
+        '</div>';
+      initFleetCarousel(el.querySelector(".fleet-carousel"));
       return;
     }
     /* صفحة الأسطول الكاملة: كل المركبات مصنّفة بالعائلات مع عناوينها، كما هي. */
@@ -1957,13 +2591,25 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     var a = e.target.closest ? e.target.closest("[data-veh]") : null;
     if (a) pendingVeh = a.getAttribute("data-veh");
   });
+  /* مفاتيح بطاقات الأسطول الدقيقة: كل بطاقة مركبة تُعرِّف مركبتها بالضبط،
+     فزر «اطلب هذه المركبة» يختار تلك المركبة نفسها في الطلب، لا فئة عامة */
+  var VEHKEYS = {"van-long":"فورغون طويل (حتى 1.86 طن)","van-short":"فورغون قصير","van-standard":"فورغون عادي","changhe":"شانغي صندوق","harbin-open":"هاربين مكشوفة","flatbed-trailer":"شاحنة بمقطورة مفتوحة","fridge-small":"شاحنة مبردة صغيرة","fridge-medium":"شاحنة مبردة متوسطة","fridge-large":"شاحنة مبردة نصف مقطورة كبيرة","water-tanker":"صهريج ماء","fuel-tanker":"صهريج وقود","sewer":"شاحنة شفط المجاري","tow-medium":"شاحنة سحب متوسطة","tow-light":"شاحنة رفع خفيفة","car-carrier":"ناقلة سيارات","concrete-pump":"شاحنة مضخة خرسانة","forklift":"رافعة شوكية","equipment":"ناقل معدات"};
   function applyVehicle(key){
     if (!key) return;
     var sel = document.getElementById("oVeh");
     if (!sel) return;
-    for (var i = 0; i < VEHICLES.length; i++) {
-      if (VEHICLES[i].id === key) { sel.value = VEHICLES[i].opt; break; }
+    var opt = VEHKEYS[key] || null;
+    if (!opt) {
+      for (var i = 0; i < VEHICLES.length; i++) {
+        if (VEHICLES[i].id === key) { opt = VEHICLES[i].opt; break; }
+      }
     }
+    if (!opt) return;
+    sel.value = opt;
+    /* طلب مباشر: المركبة اختارها العميل بنفسه من بطاقة الأسطول، فتُفعَّل كمركبة
+       مختارة مسبقاً ليتخطّى معالج الطلب خطوة الشاحنة ويُكمل باقي الخطوات كاملة */
+    if (window.camioniDirectVeh) window.camioniDirectVeh(opt);
+    else window.__pendingDirectVeh = opt;
   }
 
   /* ---------- التوجيه بين الصفحات ---------- */
@@ -2042,8 +2688,8 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     var MSG_SEND_FAIL = "تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى.";
     var MSG_CODE_BAD = "الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً.";
     var MSG_WAIT = "انتظر 60 ثانية قبل طلب رمز جديد.";
-    /* تنظيف الرقم للخادم: بلا مسافات، والبادئة المحلية 0 تصبح 213
-       (05/06/07 ← 2135/2136/2137) — العميل يكتب رقمه العادي الذي يبدأ بـ 0 دائماً */
+    /* تنظيف الرقم للخادم: بلا مسافات، وتُوحَّد كل الصيغ المقبولة إلى 213XXXXXXXXX
+       (المحلية 0…، و+213…، و00213…، و213… — كلها تصل إلى الخادم بنفس الشكل) */
     function intlPhone(raw){
       var d = otpNorm(String(raw == null ? "" : raw));
       if (d.indexOf("00213") === 0) d = "213" + d.slice(5);
@@ -2098,7 +2744,7 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
       var refEl = document.getElementById("orderRef");
       if (refEl) refEl.textContent = ref;
       var sb = document.getElementById("orderSubmitBtn");
-      if (sb) { sb.style.display = ""; sb.disabled = true; sb.textContent = "تم استلام الطلب ✓"; }
+      if (sb) { sb.style.display = ""; sb.disabled = true; sb.textContent = "تم التأكيد ✓"; }
       if (verifyBox) verifyBox.hidden = true;
       var box = document.getElementById("orderSuccess");
       box.classList.add("show");
@@ -2107,7 +2753,7 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
     function confirmOtp(){
       var code = otpDigits.map(function(d){ return d.value; }).join("");
       if (code.length < 4) {
-        if (otpErr) { otpErr.textContent = otpLangText("أدخل الرمز كاملاً من 4 أرقام."); otpErr.classList.add("show"); }
+        if (otpErr) { otpErr.textContent = otpLangText("أدخل الأرقام الأربعة كاملة."); otpErr.classList.add("show"); }
         otpDigits.forEach(function(d){ if (!d.value) d.classList.add("bad"); });
         var firstEmpty = null;
         otpDigits.forEach(function(d){ if (!firstEmpty && !d.value) firstEmpty = d; });
@@ -2208,7 +2854,7 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
         ok = check("f-date", val("oDate") !== "") && ok;
         ok = check("f-period", val("oPeriod") !== "") && ok;
       }
-      ok = check("f-phone", /^0[567]\d{8}$/.test(val("oPhone").replace(/[\s-]/g, ""))) && ok;
+      ok = check("f-phone", /^(\+213|00213|213|0)[567]\d{8}$/.test(val("oPhone").replace(/[\s()-]/g, ""))) && ok;
       if (!ok) {
         var badField = orderForm.querySelector(".field.invalid");
         if (badField) {
@@ -2290,7 +2936,7 @@ var CAMIONI_API_BASE = "https://camioni-whatsapp-server.fly.dev";
 (function(){
 "use strict";
 var ROUTES2={"/":"home","/about":"about","/vehicles":"vehicles","/how":"how","/offers":"offers","/faq":"faq","/order":"order","/contact":"contact","/privacy":"privacy","/terms":"terms"};
-var VEHOPT={van:"فورغون (حتى 1 طن)","truck-s":"هاربين كابينة مزدوجة (حتى 1.5 طن)","harbin-covered":"هاربين مغطاة",semi:"شاحنة حاوية (حتى 40 طن)",trike:"مركبة ثلاثية العجلات",sided:"شاحنة بجوانب",flatbed:"شاحنة مسطحة",dump:"شاحنة قلاب عادية",shacman:"شاحنة قلاب شاكمان"};
+var VEHOPT={van:"فورغون (حتى 1 طن)","truck-s":"هاربين كابينة مزدوجة (حتى 1.5 طن)","harbin-covered":"هاربين مغطاة",semi:"شاحنة حاوية (حتى 40 طن)",trike:"مركبة ثلاثية العجلات",sided:"شاحنة بجوانب",flatbed:"شاحنة مسطحة",dump:"شاحنة قلاب عادية",shacman:"شاحنة قلاب شاكمان","van-long":"فورغون طويل (حتى 1.86 طن)","van-short":"فورغون قصير","van-standard":"فورغون عادي",changhe:"شانغي صندوق","harbin-open":"هاربين مكشوفة","flatbed-trailer":"شاحنة بمقطورة مفتوحة","fridge-small":"شاحنة مبردة صغيرة","fridge-medium":"شاحنة مبردة متوسطة","fridge-large":"شاحنة مبردة نصف مقطورة كبيرة","water-tanker":"صهريج ماء","fuel-tanker":"صهريج وقود",sewer:"شاحنة شفط المجاري","tow-medium":"شاحنة سحب متوسطة","tow-light":"شاحنة رفع خفيفة","car-carrier":"ناقلة سيارات","concrete-pump":"شاحنة مضخة خرسانة",forklift:"رافعة شوكية",equipment:"ناقل معدات"};
 var curPage="home", curLang="ar";
 
 var TITLES2={
@@ -2481,13 +3127,13 @@ var FR={
 "اطلب من الموقع… بدون تحميل أي تطبيق":"Commandez depuis le site… sans télécharger aucune application",
 "أرسل طلبك الأول":"Envoyez votre première demande",
 "تطبيقات تحتاج تحميلها":"applications à télécharger",
-"للسائقين — عبر التطبيق":"Pour les chauffeurs — via l'application",
+"للسائقين":"Pour les chauffeurs",
 "0% عمولة":"0 % de commission",
 "شهر كامل بدون عمولة":"Un mois entier sans commission",
-"السائقون الذين يسجلون في تطبيق كاميوني على Google Play من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.":"Les chauffeurs qui s'inscrivent à l'application Camioni sur Google Play, parmi les premiers inscrits, bénéficient de 0 % de commission pendant un mois entier.",
+"السائقون الذين يسجلون في كاميوني — من هذا الموقع بزر «سجل كسائق» أو من التطبيق على Google Play — من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.":"Les chauffeurs qui s'inscrivent à Camioni — depuis ce site via le bouton « S'inscrire comme chauffeur » ou depuis l'application sur Google Play — parmi les premiers inscrits, bénéficient de 0 % de commission pendant un mois entier.",
 "كل أرباحك تبقى لك طوال الشهر":"Tous vos gains restent à vous tout le mois",
 "أولوية في استقبال الطلبات":"Priorité pour recevoir les commandes",
-"التسجيل من التطبيق مباشرة":"Inscription directement depuis l'application",
+"التسجيل من الموقع أو التطبيق مباشرة":"Inscription directement depuis le site ou l'application",
 "برنامج الدعوة":"Programme de parrainage",
 "ستة أشهر كاملة بدون عمولة":"Six mois complets sans commission",
 "6 أشهر .0% عمولة":"6 mois .0% de commission",
@@ -2513,7 +3159,7 @@ var FR={
 "كيف أتابع بضاعتي أثناء النقل؟":"Comment suivre mes marchandises pendant le transport ?",
 "يبقى فريق كاميوني على تواصل معك في الواتساب من الاستلام حتى التسليم: نعلمك عند انطلاق الناقل، ونتابع معك وصول البضاعة، ونؤكّد التسليم مع المستلم.":"L'équipe Camioni reste en contact avec vous sur WhatsApp de l'enlèvement à la livraison : nous vous informons du départ du transporteur, suivons l'arrivée des marchandises et confirmons la livraison avec le destinataire.",
 "أنا سائق وأريد العمل مع كاميوني، كيف أنضم؟":"Je suis chauffeur et je veux travailler avec Camioni, comment rejoindre ?",
-"تسجيل السائقين يتم مباشرة من تطبيق كاميوني على Google Play — لن تحتاج هذا الموقع للتسجيل. المنضمون الأوائل عبر التطبيق يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.":"L'inscription des chauffeurs se fait directement dans l'application Camioni sur Google Play — vous n'avez pas besoin de ce site pour vous inscrire. Les premiers inscrits via l'application bénéficient de l'offre de lancement : 0 % de commission pendant un mois entier. Et le programme de parrainage : invitez 3 chauffeurs avec votre code d'invitation, lorsque les trois ont rejoint la plateforme et que chacun d'eux a complété 5 chargements réussis, vous obtenez 6 mois .0% de commission au total. Suivez nos pages Facebook, Instagram et TikTok.",
+"تسجيل السائقين يتم من هذا الموقع نفسه: اضغط زر «سجل كسائق» في الصفحة الرئيسية، عبّئ بياناتك، أكّد رقمك برمز يصلك على واتساب، وارفَع وثائقك — يراجع فريقنا ملفك ويعتمد حسابك إذا كانت وثائقك سليمة، ويمكنك التسجيل أيضاً من تطبيق كاميوني على Google Play. المنضمون الأوائل يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.":"L'inscription des chauffeurs se fait sur ce site même : cliquez sur le bouton « S'inscrire comme chauffeur » sur la page d'accueil, remplissez vos informations, confirmez votre numéro avec un code reçu sur WhatsApp et téléversez vos documents — notre équipe examine votre dossier et valide votre compte si vos documents sont en règle ; vous pouvez aussi vous inscrire depuis l'application Camioni sur Google Play. Les premiers inscrits bénéficient de l'offre de lancement : 0 % de commission pendant un mois entier. Et le programme de parrainage : invitez 3 chauffeurs avec votre code d'invitation, lorsque les trois ont rejoint la plateforme et que chacun d'eux a complété 5 chargements réussis, vous obtenez 6 mois .0% de commission au total. Suivez nos pages Facebook, Instagram et TikTok.",
 "هل يمكنني إلغاء أو تعديل طلبي؟":"Puis-je annuler ou modifier ma commande ?",
 "نعم، ما دام الناقل لم ينطلق بعد: راسلنا في نفس محادثة الواتساب أو على الرقم 0795 31 80 16 وسنعدّل التفاصيل أو نلغي الطلب.":"Oui, tant que le transporteur n'est pas parti : écrivez-nous dans la même conversation WhatsApp ou au 0795 31 80 16 et nous modifierons les détails ou annulerons la commande.",
 "ما زال عندك سؤال؟":"Encore une question ?",
@@ -2525,7 +3171,7 @@ var FR={
 "الاسم الكامل":"Nom complet",
 "من فضلك أدخل الاسم الكامل.":"Veuillez saisir le nom complet.",
 "رقم هاتفك":"Votre numéro de téléphone",
-"أدخل رقم هاتف جزائري صحيح (يبدأ بـ 05 أو 06 أو 07).":"Saisissez un numéro algérien valide (commençant par 05, 06 ou 07).",
+"أدخل رقم هاتف جزائري صحيح (كل الصيغ مقبولة: 05… أو +213… أو 00213… أو 213…).":"Saisissez un numéro algérien valide (tous les formats acceptés : 05…, +213…, 00213… ou 213…).",
 "نوع البضاعة":"Type de marchandise",
 "اذكر نوع البضاعة المراد نقلها.":"Indiquez le type de marchandise à transporter.",
 "الوزن التقريبي (اختياري)":"Poids approximatif (optionnel)",
@@ -2622,7 +3268,7 @@ var FR={
 "اطلب هذه المركبة":"Commander ce véhicule",
 "التقييم المتوسط":"Note moyenne",
 "قيد التنفيذ":"En cours",
-"تم استلام طلبك — نؤكّد الناقل الآن":"Demande reçue — confirmation du transporteur en cours",
+"عروض السائقين تصل الآن":"Les offres des chauffeurs arrivent",
 "الجزائر ← وهران":"Alger → Oran"};
 
 var PH_I18N={fr:{
@@ -2661,6 +3307,7 @@ var ARIA_I18N={fr:{
 "تواصل معنا عبر واتساب":"Contactez-nous via WhatsApp",
 "الوضع الليلي":"Mode nuit",
 "إغلاق":"Fermer",
+"السابق":"Précédent","التالي":"Suivant",
 "افتح التقويم لاختيار التاريخ":"Ouvrir le calendrier pour choisir la date",
 "الشهر السابق":"Mois précédent","الشهر التالي":"Mois suivant","الشهر":"Mois","السنة":"Année",
 "بطاقة طلب نقل كاميوني — تتبع مباشر لحالة الطلب":"Carte de commande Camioni — suivi en direct du statut"},
@@ -2673,6 +3320,7 @@ en:{
 "تواصل معنا عبر واتساب":"Contact us via WhatsApp",
 "الوضع الليلي":"Dark mode",
 "إغلاق":"Close",
+"السابق":"Previous","التالي":"Next",
 "افتح التقويم لاختيار التاريخ":"Open the calendar to choose a date",
 "الشهر السابق":"Previous month","الشهر التالي":"Next month","الشهر":"Month","السنة":"Year",
 "بطاقة طلب نقل كاميوني — تتبع مباشر لحالة الطلب":"Camioni transport order card — live status tracking"}};
@@ -2698,7 +3346,7 @@ function showPage(page,veh){
   var bg=document.getElementById("burger"); if(bg)bg.setAttribute("aria-expanded","false");
   setTitle();
   window.scrollTo(0,0);
-  if(page==="order"&&veh&&VEHOPT[veh]){var s=document.getElementById("oVeh"); if(s)s.value=VEHOPT[veh];}
+  if(page==="order"&&veh&&VEHOPT[veh]){var s=document.getElementById("oVeh"); if(s)s.value=VEHOPT[veh]; if(window.camioniDirectVeh)window.camioniDirectVeh(VEHOPT[veh]); else window.__pendingDirectVeh=VEHOPT[veh];}
 }
 function pageFromHash(){var h=location.hash.replace(/^#/,"");var p=h.split("?")[0];return ROUTES2[p]||"home";}
 document.addEventListener("click",function(e){
@@ -3045,13 +3693,13 @@ window.CAMIONI_I18N.en={
 "اطلب من الموقع… بدون تحميل أي تطبيق":"Order from the website… without downloading any app",
 "أرسل طلبك الأول":"Send your first request",
 "تطبيقات تحتاج تحميلها":"apps to download",
-"للسائقين — عبر التطبيق":"For drivers — via the app",
+"للسائقين":"For drivers",
 "0% عمولة":"0% commission",
 "شهر كامل بدون عمولة":"A full month with no commission",
-"السائقون الذين يسجلون في تطبيق كاميوني على Google Play من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.":"Drivers who register in the Camioni app on Google Play, among the earliest joiners, benefit from 0% commission for a full month.",
+"السائقون الذين يسجلون في كاميوني — من هذا الموقع بزر «سجل كسائق» أو من التطبيق على Google Play — من أوائل المنضمين يستفيدون من صفر بالمئة عمولة لمدة شهر كامل.":"Drivers who register with Camioni — from this website via the “Register as a driver” button or from the app on Google Play — among the earliest joiners, benefit from 0% commission for a full month.",
 "كل أرباحك تبقى لك طوال الشهر":"All your earnings stay yours all month",
 "أولوية في استقبال الطلبات":"Priority in receiving orders",
-"التسجيل من التطبيق مباشرة":"Registration directly in the app",
+"التسجيل من الموقع أو التطبيق مباشرة":"Registration directly on the website or in the app",
 "برنامج الدعوة":"Referral program",
 "ستة أشهر كاملة بدون عمولة":"Six full months with no commission",
 "6 أشهر .0% عمولة":"6 months .0% commission",
@@ -3077,7 +3725,7 @@ window.CAMIONI_I18N.en={
 "كيف أتابع بضاعتي أثناء النقل؟":"How do I track my goods during transport?",
 "يبقى فريق كاميوني على تواصل معك في الواتساب من الاستلام حتى التسليم: نعلمك عند انطلاق الناقل، ونتابع معك وصول البضاعة، ونؤكّد التسليم مع المستلم.":"The Camioni team stays in touch with you on WhatsApp from pickup to delivery: we inform you when the carrier departs, follow up on the goods' arrival, and confirm delivery with the recipient.",
 "أنا سائق وأريد العمل مع كاميوني، كيف أنضم؟":"I'm a driver and want to work with Camioni — how do I join?",
-"تسجيل السائقين يتم مباشرة من تطبيق كاميوني على Google Play — لن تحتاج هذا الموقع للتسجيل. المنضمون الأوائل عبر التطبيق يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.":"Driver registration is done directly in the Camioni app on Google Play — you don't need this website to register. Early joiners through the app benefit from the launch offer: 0% commission for a full month. And the referral program: invite 3 drivers with your invitation code, when all three have joined and each of them has completed 5 successful loads, you get 6 months .0% commission in total. Follow our Facebook, Instagram and TikTok pages.",
+"تسجيل السائقين يتم من هذا الموقع نفسه: اضغط زر «سجل كسائق» في الصفحة الرئيسية، عبّئ بياناتك، أكّد رقمك برمز يصلك على واتساب، وارفَع وثائقك — يراجع فريقنا ملفك ويعتمد حسابك إذا كانت وثائقك سليمة، ويمكنك التسجيل أيضاً من تطبيق كاميوني على Google Play. المنضمون الأوائل يستفيدون من عرض الإطلاق: 0% عمولة لمدة شهر كامل. وبرنامج الدعوة: ادعُ 3 سائقين برقم دعوتك، ويُكمل كل مدعو 5 حمولات ناجحة، فتحصل على 6 أشهر .0% عمولة. تابع صفحاتنا على فيسبوك وإنستغرام وتيك توك.":"Driver registration is done on this website itself: click the “Register as a driver” button on the homepage, fill in your details, confirm your number with a code sent to you on WhatsApp, and upload your documents — our team reviews your file and approves your account if your documents are in order; you can also register from the Camioni app on Google Play. Early joiners benefit from the launch offer: 0% commission for a full month. And the referral program: invite 3 drivers with your invitation code, when all three have joined and each of them has completed 5 successful loads, you get 6 months .0% commission in total. Follow our Facebook, Instagram and TikTok pages.",
 "هل يمكنني إلغاء أو تعديل طلبي؟":"Can I cancel or modify my order?",
 "نعم، ما دام الناقل لم ينطلق بعد: راسلنا في نفس محادثة الواتساب أو على الرقم 0795 31 80 16 وسنعدّل التفاصيل أو نلغي الطلب.":"Yes, as long as the carrier hasn't departed: message us in the same WhatsApp chat or at 0795 31 80 16 and we'll adjust the details or cancel the order.",
 "ما زال عندك سؤال؟":"Still have a question?",
@@ -3089,7 +3737,7 @@ window.CAMIONI_I18N.en={
 "الاسم الكامل":"Full name",
 "من فضلك أدخل الاسم الكامل.":"Please enter your full name.",
 "رقم هاتفك":"Your phone number",
-"أدخل رقم هاتف جزائري صحيح (يبدأ بـ 05 أو 06 أو 07).":"Enter a valid Algerian number (starting with 05, 06 or 07).",
+"أدخل رقم هاتف جزائري صحيح (كل الصيغ مقبولة: 05… أو +213… أو 00213… أو 213…).":"Enter a valid Algerian number (all formats accepted: 05…, +213…, 00213… or 213…).",
 "نوع البضاعة":"Type of goods",
 "اذكر نوع البضاعة المراد نقلها.":"State the type of goods to be transported.",
 "الوزن التقريبي (اختياري)":"Approximate weight (optional)",
@@ -3186,7 +3834,7 @@ window.CAMIONI_I18N.en={
 "اطلب هذه المركبة":"Order this vehicle",
 "التقييم المتوسط":"Average rating",
 "قيد التنفيذ":"In progress",
-"تم استلام طلبك — نؤكّد الناقل الآن":"Request received — confirming the carrier now",
+"عروض السائقين تصل الآن":"Driver offers are arriving now",
 "الجزائر ← وهران":"Algiers → Oran"};
 </script>
 
@@ -3217,6 +3865,9 @@ var steps=[].slice.call(form.querySelectorAll(".wstep"));
 var pills=[].slice.call(document.querySelectorAll("#wstepsNav .wstep-pill"));
 var prev=document.getElementById("wPrev"), next=document.getElementById("wNext");
 var cur=1, maxReached=1;
+/* طلب مباشر من بطاقة أسطول: قيمة المركبة التي اختارها العميل بزر «اطلب هذه
+   المركبة» — ما دامت هي قيمة حقل المركبة يبقى الطلب في وضع الطلب المباشر */
+var directVehVal="";
 function val(id){var e=document.getElementById(id);return e?e.value.trim():"";}
 function phoneOk(v){var d=v.replace(/[\s-]/g,"");return /^(\+213|00213|0)?[567]\d{8}$/.test(d);}
 function setInv(fid,bad){var f=document.getElementById(fid);if(f)f.classList.toggle("invalid",bad);return !bad;}
@@ -3290,12 +3941,25 @@ function buildSummary(){
 function goTo(n,scroll){
   cur=n; if(n>maxReached)maxReached=n;
   steps.forEach(function(s){s.classList.toggle("active",+s.getAttribute("data-step")===n);});
-  pills.forEach(function(p,i){p.classList.toggle("active",i===n-1);p.classList.toggle("done",i<n-1);});
+  pills.forEach(function(p,i){p.classList.toggle("active",i===n-1);p.classList.toggle("done",i<n-1||(i===1&&n!==2&&!!directVehVal&&val("oVeh")===directVehVal));});
   if(prev)prev.style.visibility=(n===1)?"hidden":"visible";
   if(next)next.style.display=(n===5)?"none":"inline-flex";
   if(n===2)filterVehByCat();
   if(scroll){var y=form.getBoundingClientRect().top+window.scrollY-90;window.scrollTo({top:y<0?0:y,behavior:"smooth"});}
 }
+/* تفعيل الطلب المباشر: تُستدعى عند ضغط زر «اطلب هذه المركبة» في أي بطاقة أسطول
+   (الرئيسية أو صفحة الأسطول الكاملة) — تُسجَّل المركبة في الطلب وملخّصه، ويبدأ
+   المعالج من الخطوة الأولى مع خطوة الشاحنة مكتملة مسبقاً (علامة خضراء)، فلا
+   تُعرض خطوة اختيار المركبة على العميل أبداً في هذا المسار */
+window.camioniDirectVeh=function(v){
+  directVehVal=v||"";
+  if(!v)return;
+  var s=document.getElementById("oVeh"); if(s)s.value=v;
+  maxReached=1;
+  syncVeh();
+  goTo(1,false);
+  form.dispatchEvent(new Event("change"));
+};
 /* عند فشل التحقق في «التالي»: تبقى الخطوة كما هي، وتنزل الصفحة تلقائياً إلى أول
    حقل فيه الخطأ بالضبط (مظلَّلاً ورسالة خطئه ظاهرة أسفله) ويُركَّز عليه ليصحّحه العميل */
 function scrollToFirstInvalid(){
@@ -3313,6 +3977,12 @@ if(next)next.addEventListener("click",function(){
      الشرط: المركبة المختارة من مركبات نوع الشحنة الحالي فعلاً، وخطوة الشاحنة صالحة
      كما هي (للرافعة الشوكية: اختار حجمها أيضاً)، وإلا توقّف عند خطوة الشاحنة كالمعتاد */
   if(cur===1&&val("oVeh")&&displayVehList(selfMode).indexOf(val("oVeh"))>-1&&validateStep(2)){goTo(3,true);return;}
+  /* طلب مباشر من بطاقة الأسطول: المركبة مختارة مسبقاً بضغط العميل على «اطلب هذه
+     المركبة»، فخطوة الشاحنة مكتملة عنده ولا تُعرض له أبداً — من الخطوة الأولى إلى
+     خطوة المسار مباشرة مهما كان نوع الشحنة الذي اختاره. الاستثناء الوحيد: الرافعة
+     الشوكية بلا حجم مختار — يبقى العميل في الخطوة الأولى حيث يظهر له اختيار الحجم
+     (في قائمة الخطوة الأولى نفسها) حتى يختاره، دون أن يُطلب منه اختيار المركبة */
+  if(cur===1&&directVehVal&&val("oVeh")===directVehVal){if(validateStep(2)){goTo(3,true);}else{scrollToFirstInvalid();}return;}
   goTo(cur+1,true);
 });
 if(prev)prev.addEventListener("click",function(){if(cur>1)goTo(cur-1,true);});
@@ -3334,7 +4004,7 @@ if(catGrid){catGrid.addEventListener("click",function(e){
   /* لا انتقال تلقائي: يبقى العميل في هذه الخطوة، وينتقل بنفسه بالضغط على «التالي» */
 });}
 /* ----- أدوات خطوات الطلب الجديدة ----- */
-function phone9(v){var d=v.replace(/[\s-]/g,"");return /^0[567]\d{8}$/.test(d);}
+function phone9(v){var d=v.replace(/[\s()-]/g,"");return /^(\+213|00213|213|0)[567]\d{8}$/.test(d);}
 function parseTonnesToKg(txt){
   var t=(""+(txt||"")).replace(/[٠-٩]/g,function(c){return "٠١٢٣٤٥٦٧٨٩".indexOf(c);}).replace(/,/g,".");
   var m=t.match(/\d+(?:\.\d+)?/); if(!m)return null;
@@ -3473,12 +4143,12 @@ function filterVehByCat(){
   var list=displayVehList(selfMode);
   vehPick.querySelectorAll(".veh-opt").forEach(function(b){
     var v=b.getAttribute("data-val");
-    var show=list.indexOf(v)>-1||v===SELF_VAL;
+    var show=list.indexOf(v)>-1||v===SELF_VAL||(!!directVehVal&&v===directVehVal);
     /* المركبة المقترحة حسب الوزن تبقى ظاهرة فقط إن كانت من عائلة النوع نفسه */
     if(vehSuggested&&oVeh&&v===oVeh.value&&famList.indexOf(v)>-1)show=true;
     b.classList.toggle("veh-hide",!show);
   });
-  if(oVeh&&oVeh.value&&oVeh.value!==SELF_VAL&&list.indexOf(oVeh.value)===-1&&!(vehSuggested&&famList.indexOf(oVeh.value)>-1)){
+  if(oVeh&&oVeh.value&&oVeh.value!==SELF_VAL&&list.indexOf(oVeh.value)===-1&&!(vehSuggested&&famList.indexOf(oVeh.value)>-1)&&!(directVehVal&&oVeh.value===directVehVal)){
     oVeh.value=""; vehSuggested=false;
     var vs=document.getElementById("vehSuggest"); if(vs)vs.style.display="none";
   }
@@ -3513,6 +4183,9 @@ function filterVehByCat(){
 function suggestVeh(kg){
   if(typeof kg==="undefined")kg=weightKg();
   if(kg===null)return;
+  /* في الطلب المباشر المركبة ثابتة كما اختارها العميل من بطاقة الأسطول:
+     لا اقتراح حسب الوزن يبدّلها أبداً */
+  if(directVehVal&&oVeh&&oVeh.value===directVehVal)return;
   /* في «جميع أنواع الشاحنات» لا اقتراح تلقائي ولا اختيار مسبق: القائمة كاملة أمامه ويختار بنفسه */
   if(val("oCat")==="جميع أنواع الشاحنات")return;
   var v=suggestForKg(kg);
@@ -4003,6 +4676,7 @@ if(catVehPick)catVehPick.addEventListener("click",function(e){
 });
 form.addEventListener("reset",function(){
   selfMode=false;
+  directVehVal=""; window.__pendingDirectVeh=null;
   if(catVeh)catVeh.style.display="none";
   if(catVehPick)catVehPick.innerHTML="";
   var lb=document.getElementById("laterBox"); if(lb)lb.style.display="none";
@@ -4120,6 +4794,9 @@ form.addEventListener("reset",function(){
   if(verifiedBox)verifiedBox.classList.remove("show");
   if(codeArea)codeArea.style.display="none";
 });
+/* فتح صفحة الطلب مباشرة برابط مركبة من الأسطول (#/order?v=…): المركبة سُجّلت
+   مسبقاً قبل تهيئة هذا المعالج، فنفعّل وضع الطلب المباشر بها من البداية */
+if(window.__pendingDirectVeh){directVehVal=window.__pendingDirectVeh; window.__pendingDirectVeh=null; syncVeh();}
 goTo(1,false);
 })();
 </script>
@@ -4137,34 +4814,35 @@ goTo(1,false);
 "ضرورية حتى نعطيك سعراً دقيقاً. طلبك يُسجَّل مباشرة داخل المنصة عند التأكيد في آخر مرحلة — بدون واتساب.":"sont obligatoires pour vous donner un prix précis. Votre demande est enregistrée directement sur la plateforme lors de la confirmation à la dernière étape — sans WhatsApp.",
 "أثاث منزلي":"Meubles de maison","طرود ومستندات":"Colis et documents","مواد غذائية":"Produits alimentaires",
 "تأكيد الطلب":"Confirmer la commande",
-"تم استلام طلبك بنجاح":"Votre commande a bien été reçue",
+"عروض السائقين تصل الآن":"Les offres des chauffeurs arrivent",
 "رقم طلبك:":"Votre numéro de commande :",
-"طلبك مسجّل الآن داخل المنصة. سيتصل بك فريق كاميوني على رقم هاتفك لتأكيد الناقل — احتفظ برقم الطلب لمتابعته.":"Votre demande est maintenant enregistrée sur la plateforme. L'équipe Camioni vous appellera sur votre numéro pour confirmer le transporteur — conservez le numéro de commande pour son suivi.",
+"طلبك أُرسل إلى السائقين، والعروض تصل الآن — ستظهر هنا مباشرة فور وصولها.":"Votre demande a été envoyée aux chauffeurs, et les offres arrivent — elles apparaîtront ici dès leur réception.",
+"ستصلك العروض والإشعارات مباشرة من السائقين، وليس من كاميوني. كاميوني لا تتواصل معك إلا في حالة نزاع أو مشكلة أو عطل.":"Vous recevrez les offres et les notifications directement des chauffeurs, pas de Camioni. Camioni ne vous contacte qu'en cas de litige, de problème ou de panne.",
 "إرسال طلب آخر":"Envoyer une autre demande",
 "اتصل بنا هاتفياً":"Appelez-nous",
 "اطلب نقل بضاعتك مباشرة من الموقع بدون تحميل التطبيق حدّد نوع البضاعة ومكان الاستلام والتسليم،ثم انشر طلبك خلال دقائق تصلك عروض مختلفه من السائقين اختر ما يناسبك ..... ساهلة ماهلة - من الطرد الصغير حتى حمولات 60 طن، عبر كل الولايات.":"Commandez le transport de vos marchandises directement depuis le site, sans télécharger l'application. Précisez le type de marchandise, le lieu d'enlèvement et de livraison, puis publiez votre demande : en quelques minutes, vous recevrez différentes offres de chauffeurs, choisissez celle qui vous convient ..... Facile et simple — du petit colis aux charges de 60 tonnes, dans toutes les wilayas.",
-"تأكيد هاتفي سريع":"Confirmation téléphonique rapide",
+"تأكيد فوري داخل المنصة":"Confirmation instantanée sur la plateforme",
 "داخل المنصة":"Sur la plateforme",
 "تسجيل ومتابعة طلبك":"Enregistrement et suivi de votre commande",
 "يصل طلبك إلى فريقنا مباشرة داخل المنصة، نراجعه ونؤكّد لك الناقل.":"Votre demande arrive directement à notre équipe sur la plateforme ; nous l'examinons et vous confirmons le transporteur.",
-"يبقى فريق كاميوني على تواصل هاتفي معك من لحظة الاستلام حتى تأكيد وصول بضاعتك.":"L'équipe Camioni reste en contact téléphonique avec vous, du moment de l'enlèvement jusqu'à la confirmation de l'arrivée de vos marchandises.",
-"اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ونؤكّده معك هاتفياً.":"Commandez directement depuis le navigateur, sans compte et sans téléchargement. Votre demande est enregistrée sur la plateforme et confirmée avec vous par téléphone.",
+"تتابع بضاعتك داخل المنصة من لحظة الاستلام حتى التسليم، ويبقى السائق على تواصل مباشر معك طوال الرحلة.":"Suivez vos marchandises sur la plateforme, de l'enlèvement à la livraison : le chauffeur reste en contact direct avec vous pendant tout le trajet.",
+"اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ويؤكّده لك السائق مباشرة داخلها.":"Commandez directement depuis le navigateur, sans compte et sans téléchargement. Votre demande est enregistrée sur la plateforme, et le chauffeur vous la confirme directement sur la plateforme.",
 "استقبال الطلبات داخل الموقع":"Réception des commandes sur le site",
-"اطلب نقلك في بضع نقرات من داخل الموقع، وسيتصل بك فريقنا هاتفياً لتأكيد كل شيء.":"Commandez votre transport en quelques clics depuis le site, et notre équipe vous appellera pour tout confirmer.",
-"كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون ويستقبلون الطلبات مباشرة من التطبيق.":"Tous nos services sont disponibles directement sur ce site et dans l'application : les chauffeurs s'inscrivent et reçoivent les commandes directement depuis l'application.",
+"اطلب نقلك في بضع نقرات من داخل الموقع، وتصلك عروض السائقين مباشرة لتختار ما يناسبك.":"Commandez votre transport en quelques clics depuis le site, et recevez les offres des chauffeurs directement pour choisir celle qui vous convient.",
+"كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون من هذا الموقع أو من التطبيق، ويستقبلون الطلبات مباشرة من التطبيق.":"Tous nos services sont disponibles directement sur ce site et dans l'application : les chauffeurs s'inscrivent depuis ce site ou depuis l'application, et reçoivent les commandes directement depuis l'application.",
 "اليوم نستقبل طلبات النقل مباشرة عبر هذا الموقع في كل الولايات، وتطبيق كاميوني على Google Play يجمع العملاء والسائقين في مكان واحد.":"Aujourd'hui, nous recevons les demandes de transport directement via ce site dans toutes les wilayas, et l'application Camioni sur Google Play réunit clients et chauffeurs au même endroit.",
-"كل طلب يُراجَع ويُؤكَّد بالتواصل الهاتفي المباشر.":"Chaque demande est examinée et confirmée par contact téléphonique direct.",
-"اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة وسنراجع معك الاختيار هاتفياً قبل التأكيد.":"Choisissez la catégorie selon le poids et le volume de vos marchandises. Si vous n'êtes pas sûr, commandez avec la catégorie la plus proche et nous vérifierons le choix avec vous par téléphone avant confirmation.",
+"كل طلب يُراجَع داخل المنصة ويُؤكَّد من طرف السائق مباشرة.":"Chaque demande est examinée sur la plateforme et confirmée directement par le chauffeur.",
+"اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة، وستتمكن من مراجعة اختيارك داخل المنصة قبل التأكيد.":"Choisissez la catégorie selon le poids et le volume de vos marchandises. Si vous n'êtes pas sûr, commandez avec la catégorie la plus proche : vous pourrez vérifier votre choix sur la plateforme avant de confirmer.",
 "كاميوني تربط صاحب البضاعة بالناقل المناسب. اليوم تطلب مباشرة من داخل الموقع أو من التطبيق — والخطوات نفسها.":"Camioni relie l'expéditeur au transporteur adapté. Aujourd'hui vous commandez directement depuis le site, ou depuis l'application — avec les mêmes étapes.",
 "من صفحة «طلب جديد»: نوع الشحنة، الشاحنة، المسار، تفاصيل البضاعة، الجدول، ورقم هاتفك. عند التأكيد يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب فوراً.":"Depuis la page « Nouvelle commande » : type de cargaison, camion, itinéraire, détails des marchandises, calendrier et votre numéro de téléphone. À la confirmation, votre demande est enregistrée directement sur la plateforme et le numéro de commande s'affiche immédiatement.",
-"فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نتصل بك هاتفياً لاستكمالها.":"L'équipe Camioni examine les détails et cherche le transporteur adapté : un véhicule de la bonne taille, proche du point d'enlèvement et disponible au moment voulu. S'il manque une information, nous vous appelons pour la compléter.",
-"عند وصول البضاعة، يؤكّد المستلم الاستلام ونؤكّد معك إتمام الطلب هاتفياً. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.":"À l'arrivée des marchandises, le destinataire confirme la réception et nous confirmons avec vous par téléphone la clôture de la commande. Votre expérience nous aide à améliorer le choix des transporteurs pour vos prochaines commandes.",
+"فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نطلبها منك داخل المنصة عبر طلبك لاستكمالها.":"L'équipe Camioni examine les détails et cherche le transporteur adapté : un véhicule de la bonne taille, proche du point d'enlèvement et disponible au moment voulu. S'il manque une information, nous vous la demandons sur la plateforme, dans votre demande, pour la compléter.",
+"عند وصول البضاعة، يُؤكَّد التسليم داخل المنصة برمز التأكيد الذي يعرضه المستلم للسائق، وبذلك يكتمل طلبك. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.":"À l'arrivée des marchandises, la livraison est confirmée sur la plateforme grâce au code de confirmation que le destinataire présente au chauffeur, et votre commande est alors terminée. Votre expérience nous aide à améliorer le choix des transporteurs pour vos prochaines commandes.",
 "كل طلبات النقل تُدار كاملة داخل هذا الموقع: إرسال الطلب ومتابعة التسليم — بدون حساب وبدون تثبيت أي شيء.":"Toutes les demandes de transport sont gérées entièrement sur ce site : envoi de la demande et suivi de la livraison — sans compte et sans rien installer.",
 "كل ما تحتاج معرفته قبل طلب النقل مع كاميوني. لم تجد جوابك؟ اتصل بنا على 0795 31 80 16.":"Tout ce que vous devez savoir avant de commander un transport avec Camioni. Vous n'avez pas trouvé votre réponse ? Appelez-nous au 0795 31 80 16.",
-"من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم يتصل بك فريقنا هاتفياً لتأكيد الناقل.":"Depuis la page « Nouvelle commande », remplissez les étapes dans l'ordre : type de cargaison, camion, itinéraire, marchandises, calendrier et coordonnées, puis vérifiez votre demande à l'étape de contrôle et confirmez-la. Votre demande est enregistrée directement sur la plateforme, le numéro de commande s'affiche, puis notre équipe vous appelle pour confirmer le transporteur.",
+"من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم تصلك عروض السائقين داخل المنصة، ويتواصل معك السائق الذي تختاره مباشرة للتأكيد.":"Depuis la page « Nouvelle commande », remplissez les étapes dans l'ordre : type de cargaison, camion, itinéraire, marchandises, calendrier et coordonnées, puis vérifiez votre demande à l'étape de contrôle et confirmez-la. Votre demande est enregistrée directement sur la plateforme, le numéro de commande s'affiche, puis les offres des chauffeurs vous parviennent sur la plateforme, et le chauffeur que vous choisissez vous contacte directement pour confirmer.",
 "لا. خدمة الطلب تعمل كاملة من داخل هذا الموقع، بدون حساب وبدون تحميل وبدون واتساب.":"Non. Le service de commande fonctionne entièrement depuis ce site, sans compte, sans téléchargement et sans WhatsApp.",
-"طلبك يُسجَّل داخل المنصة فوراً. نراجعه ونتصل بك بالتأكيد في أقرب وقت ممكن خلال أوقات العمل، وكلما كان وصف الطلب أدق كان الرد أسرع.":"Votre demande est enregistrée immédiatement sur la plateforme. Nous l'examinons et vous appelons avec la confirmation dès que possible pendant les heures de travail ; plus la description est précise, plus la réponse est rapide.",
-"يبقى فريق كاميوني على تواصل هاتفي معك من الاستلام حتى التسليم: نعلمك عند انطلاق الناقل، ونتابع معك وصول البضاعة، ونؤكّد التسليم مع المستلم.":"L'équipe Camioni reste en contact téléphonique avec vous de l'enlèvement à la livraison : nous vous informons du départ du transporteur, suivons l'arrivée des marchandises et confirmons la livraison avec le destinataire.",
+"طلبك يُسجَّل داخل المنصة فوراً، وتصلك عروض السائقين مباشرة على المنصة لتختار وتؤكّد بنفسك، وكلما كان وصف الطلب أدق وصلتك العروض أسرع.":"Votre demande est enregistrée immédiatement sur la plateforme, et les offres des chauffeurs vous parviennent directement sur la plateforme pour que vous choisissiez et confirmiez vous-même ; plus la description est précise, plus les offres arrivent vite.",
+"تتابع بضاعتك داخل المنصة من الاستلام حتى التسليم: يصلك إشعار مباشرة من السائق عند انطلاقه وعند وصول البضاعة، ويبقى السائق على تواصل معك طوال الرحلة، ويُؤكَّد التسليم داخل المنصة.":"Suivez vos marchandises sur la plateforme, de l'enlèvement à la livraison : le chauffeur vous notifie directement à son départ et à l'arrivée des marchandises, reste en contact avec vous pendant tout le trajet, et la livraison est confirmée sur la plateforme.",
 "نعم، ما دام الناقل لم ينطلق بعد: اتصل بنا على الرقم 0795 31 80 16 وسنعدّل التفاصيل أو نلغي الطلب.":"Oui, tant que le transporteur n'est pas parti : appelez-nous au 0795 31 80 16 et nous modifierons les détails ou annulerons la commande.",
 "عند إرسال طلب نقل عبر هذا الموقع، تُسجَّل المعلومات التي تكتبها في النموذج (الاسم، رقم الهاتف، تفاصيل البضاعة وعناوين الاستلام والتسليم) داخل المنصة، ونستعمل رقم هاتفك للاتصال بك بخصوص طلبك.":"Lorsque vous envoyez une demande de transport via ce site, les informations que vous saisissez dans le formulaire (nom, numéro de téléphone, détails des marchandises et adresses d'enlèvement et de livraison) sont enregistrées sur la plateforme, et nous utilisons votre numéro pour vous appeler au sujet de votre commande.",
 "يمكنك في أي وقت طلب حذف معلوماتك أو تصحيحها بالاتصال بنا على الرقم 0795 31 80 16.":"Vous pouvez à tout moment demander la suppression ou la correction de vos informations en nous appelant au 0795 31 80 16.",
@@ -4205,34 +4883,35 @@ goTo(1,false);
 "ضرورية حتى نعطيك سعراً دقيقاً. طلبك يُسجَّل مباشرة داخل المنصة عند التأكيد في آخر مرحلة — بدون واتساب.":"are required so we can give you an accurate price. Your request is registered directly on the platform when you confirm at the final step — no WhatsApp.",
 "أثاث منزلي":"Household furniture","طرود ومستندات":"Parcels and documents","مواد غذائية":"Food products",
 "تأكيد الطلب":"Confirm order",
-"تم استلام طلبك بنجاح":"Your order has been received successfully",
+"عروض السائقين تصل الآن":"Driver offers are arriving now",
 "رقم طلبك:":"Your order number:",
-"طلبك مسجّل الآن داخل المنصة. سيتصل بك فريق كاميوني على رقم هاتفك لتأكيد الناقل — احتفظ برقم الطلب لمتابعته.":"Your request is now registered on the platform. The Camioni team will call your phone number to confirm the carrier — keep the order number to track it.",
+"طلبك أُرسل إلى السائقين، والعروض تصل الآن — ستظهر هنا مباشرة فور وصولها.":"Your request has been sent to the drivers, and offers are arriving now — they will appear here as soon as they come in.",
+"ستصلك العروض والإشعارات مباشرة من السائقين، وليس من كاميوني. كاميوني لا تتواصل معك إلا في حالة نزاع أو مشكلة أو عطل.":"You will receive offers and notifications directly from the drivers, not from Camioni. Camioni contacts you only in case of a dispute, a problem or a breakdown.",
 "إرسال طلب آخر":"Send another order",
 "اتصل بنا هاتفياً":"Call us",
 "اطلب نقل بضاعتك مباشرة من الموقع بدون تحميل التطبيق حدّد نوع البضاعة ومكان الاستلام والتسليم،ثم انشر طلبك خلال دقائق تصلك عروض مختلفه من السائقين اختر ما يناسبك ..... ساهلة ماهلة - من الطرد الصغير حتى حمولات 60 طن، عبر كل الولايات.":"Order the transport of your goods directly from the website, without downloading the app. Specify the type of goods and the pickup and delivery locations, then post your request: within minutes you will receive different offers from drivers — choose the one that suits you ..... Easy and simple — from the small parcel to loads of 60 tons, across all wilayas.",
-"تأكيد هاتفي سريع":"Fast phone confirmation",
+"تأكيد فوري داخل المنصة":"Instant confirmation on the platform",
 "داخل المنصة":"On the platform",
 "تسجيل ومتابعة طلبك":"Order registration and tracking",
 "يصل طلبك إلى فريقنا مباشرة داخل المنصة، نراجعه ونؤكّد لك الناقل.":"Your request reaches our team directly on the platform; we review it and confirm the carrier for you.",
-"يبقى فريق كاميوني على تواصل هاتفي معك من لحظة الاستلام حتى تأكيد وصول بضاعتك.":"The Camioni team stays in phone contact with you from pickup until your goods' arrival is confirmed.",
-"اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ونؤكّده معك هاتفياً.":"Order straight from your browser, no account and no download. Your request is registered on the platform and confirmed with you by phone.",
+"تتابع بضاعتك داخل المنصة من لحظة الاستلام حتى التسليم، ويبقى السائق على تواصل مباشر معك طوال الرحلة.":"Track your goods on the platform from pickup to delivery, and the driver stays in direct contact with you throughout the trip.",
+"اطلب من المتصفح مباشرة، بدون حساب وبدون تحميل. طلبك يُسجَّل داخل المنصة ويؤكّده لك السائق مباشرة داخلها.":"Order straight from your browser, no account and no download. Your request is registered on the platform, and the driver confirms it for you directly on the platform.",
 "استقبال الطلبات داخل الموقع":"Orders received on the website",
-"اطلب نقلك في بضع نقرات من داخل الموقع، وسيتصل بك فريقنا هاتفياً لتأكيد كل شيء.":"Order your transport in a few clicks on the website, and our team will call you to confirm everything.",
-"كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون ويستقبلون الطلبات مباشرة من التطبيق.":"All our services are available directly on this website and in the app: drivers register and receive orders directly in the app.",
+"اطلب نقلك في بضع نقرات من داخل الموقع، وتصلك عروض السائقين مباشرة لتختار ما يناسبك.":"Order your transport in a few clicks on the website, and drivers' offers come to you directly so you can pick the one that suits you.",
+"كل خدماتنا متاحة مباشرة من هذا الموقع ومن التطبيق: يسجّل السائقون من هذا الموقع أو من التطبيق، ويستقبلون الطلبات مباشرة من التطبيق.":"All our services are available directly on this website and in the app: drivers register from this website or from the app, and receive orders directly in the app.",
 "اليوم نستقبل طلبات النقل مباشرة عبر هذا الموقع في كل الولايات، وتطبيق كاميوني على Google Play يجمع العملاء والسائقين في مكان واحد.":"Today we receive transport requests directly through this website in all wilayas, and the Camioni app on Google Play brings customers and drivers together in one place.",
-"كل طلب يُراجَع ويُؤكَّد بالتواصل الهاتفي المباشر.":"Every request is reviewed and confirmed through direct phone contact.",
-"اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة وسنراجع معك الاختيار هاتفياً قبل التأكيد.":"Choose the category based on the weight and size of your goods. If you're unsure, order with the closest category and we'll review the choice with you by phone before confirming.",
+"كل طلب يُراجَع داخل المنصة ويُؤكَّد من طرف السائق مباشرة.":"Every request is reviewed on the platform and confirmed directly by the driver.",
+"اختر الفئة حسب وزن بضاعتك وحجمها. إذا لم تكن متأكداً، اطلب بأقرب فئة، وستتمكن من مراجعة اختيارك داخل المنصة قبل التأكيد.":"Choose the category based on the weight and size of your goods. If you're unsure, order with the closest category — you can review your choice on the platform before confirming.",
 "كاميوني تربط صاحب البضاعة بالناقل المناسب. اليوم تطلب مباشرة من داخل الموقع أو من التطبيق — والخطوات نفسها.":"Camioni connects goods owners with the right carrier. Today you order directly on the website, or from the app — with the same steps.",
 "من صفحة «طلب جديد»: نوع الشحنة، الشاحنة، المسار، تفاصيل البضاعة، الجدول، ورقم هاتفك. عند التأكيد يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب فوراً.":"From the 'New order' page: shipment type, truck, route, goods details, schedule, and your phone number. On confirmation, your request is registered directly on the platform and your order number appears instantly.",
-"فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نتصل بك هاتفياً لاستكمالها.":"The Camioni team reviews the details and looks for the right carrier: a correctly sized vehicle, close to the pickup point, and available at the required time. If any information is missing, we call you to complete it.",
-"عند وصول البضاعة، يؤكّد المستلم الاستلام ونؤكّد معك إتمام الطلب هاتفياً. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.":"When the goods arrive, the recipient confirms receipt and we confirm order completion with you by phone. Your experience helps us improve carrier selection for your future orders.",
+"فريق كاميوني يراجع التفاصيل ويبحث عن الناقل المناسب: مركبة بالحجم الصحيح، قريبة من نقطة الاستلام، ومتوفرة في الوقت المطلوب. إذا نقصت معلومة، نطلبها منك داخل المنصة عبر طلبك لاستكمالها.":"The Camioni team reviews the details and looks for the right carrier: a correctly sized vehicle, close to the pickup point, and available at the required time. If any information is missing, we ask for it on the platform, within your request, to complete it.",
+"عند وصول البضاعة، يُؤكَّد التسليم داخل المنصة برمز التأكيد الذي يعرضه المستلم للسائق، وبذلك يكتمل طلبك. تجربتك تساعدنا على تحسين اختيار الناقلين في طلباتك القادمة.":"When the goods arrive, delivery is confirmed on the platform with the confirmation code the recipient shows the driver, and your order is then complete. Your experience helps us improve carrier selection for your future orders.",
 "كل طلبات النقل تُدار كاملة داخل هذا الموقع: إرسال الطلب ومتابعة التسليم — بدون حساب وبدون تثبيت أي شيء.":"All transport requests are handled entirely on this website: sending the request and tracking delivery — no account and nothing to install.",
 "كل ما تحتاج معرفته قبل طلب النقل مع كاميوني. لم تجد جوابك؟ اتصل بنا على 0795 31 80 16.":"Everything you need to know before ordering transport with Camioni. Didn't find your answer? Call us at 0795 31 80 16.",
-"من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم يتصل بك فريقنا هاتفياً لتأكيد الناقل.":"From the 'New order' page, complete the steps in order: shipment type, truck, route, goods, schedule, and contact details, then review your request at the check step and confirm it. Your request is registered directly on the platform, your order number is shown, and our team calls you to confirm the carrier.",
+"من صفحة «طلب جديد» املأ المراحل بالترتيب: نوع الشحنة، الشاحنة، المسار، البضاعة، الجدول، وبيانات الاتصال، ثم راجع طلبك في مرحلة التحقق وأكّده. يُسجَّل طلبك مباشرة داخل المنصة ويظهر لك رقم الطلب، ثم تصلك عروض السائقين داخل المنصة، ويتواصل معك السائق الذي تختاره مباشرة للتأكيد.":"From the 'New order' page, complete the steps in order: shipment type, truck, route, goods, schedule, and contact details, then review your request at the check step and confirm it. Your request is registered directly on the platform, your order number is shown, then drivers' offers reach you on the platform, and the driver you choose contacts you directly to confirm.",
 "لا. خدمة الطلب تعمل كاملة من داخل هذا الموقع، بدون حساب وبدون تحميل وبدون واتساب.":"No. The ordering service works fully on this website, with no account, no download and no WhatsApp.",
-"طلبك يُسجَّل داخل المنصة فوراً. نراجعه ونتصل بك بالتأكيد في أقرب وقت ممكن خلال أوقات العمل، وكلما كان وصف الطلب أدق كان الرد أسرع.":"Your request is registered on the platform instantly. We review it and call you with confirmation as soon as possible during working hours; the more accurate the description, the faster the reply.",
-"يبقى فريق كاميوني على تواصل هاتفي معك من الاستلام حتى التسليم: نعلمك عند انطلاق الناقل، ونتابع معك وصول البضاعة، ونؤكّد التسليم مع المستلم.":"The Camioni team stays in phone contact with you from pickup to delivery: we inform you when the carrier departs, follow up on the goods' arrival, and confirm delivery with the recipient.",
+"طلبك يُسجَّل داخل المنصة فوراً، وتصلك عروض السائقين مباشرة على المنصة لتختار وتؤكّد بنفسك، وكلما كان وصف الطلب أدق وصلتك العروض أسرع.":"Your request is registered on the platform instantly, and drivers' offers reach you directly on the platform so you can choose and confirm yourself; the more accurate the description, the faster the offers arrive.",
+"تتابع بضاعتك داخل المنصة من الاستلام حتى التسليم: يصلك إشعار مباشرة من السائق عند انطلاقه وعند وصول البضاعة، ويبقى السائق على تواصل معك طوال الرحلة، ويُؤكَّد التسليم داخل المنصة.":"Track your goods on the platform from pickup to delivery: the driver notifies you directly when he departs and when the goods arrive, stays in contact with you throughout the trip, and delivery is confirmed on the platform.",
 "نعم، ما دام الناقل لم ينطلق بعد: اتصل بنا على الرقم 0795 31 80 16 وسنعدّل التفاصيل أو نلغي الطلب.":"Yes, as long as the carrier hasn't departed: call us at 0795 31 80 16 and we'll adjust the details or cancel the order.",
 "عند إرسال طلب نقل عبر هذا الموقع، تُسجَّل المعلومات التي تكتبها في النموذج (الاسم، رقم الهاتف، تفاصيل البضاعة وعناوين الاستلام والتسليم) داخل المنصة، ونستعمل رقم هاتفك للاتصال بك بخصوص طلبك.":"When you send a transport request through this website, the information you enter in the form (name, phone number, goods details and pickup and delivery addresses) is registered on the platform, and we use your phone number to call you about your order.",
 "يمكنك في أي وقت طلب حذف معلوماتك أو تصحيحها بالاتصال بنا على الرقم 0795 31 80 16.":"You can at any time request deletion or correction of your information by calling us at 0795 31 80 16.",
@@ -4327,15 +5006,15 @@ goTo(1,false);
   I.fr["مرن (طوال اليوم)"]="Flexible (toute la journée)"; I.en["مرن (طوال اليوم)"]="Flexible (all day)";
   I.fr["طوال اليوم"]="Toute la journée"; I.en["طوال اليوم"]="All day";
   I.fr["معلومات"]="Informations"; I.en["معلومات"]="Information";
-  I.fr["اكتب رقم هاتفك ليتمكن الناقل وفريق كاميوني من التواصل معك بخصوص طلبك"]="Écrivez votre numéro de téléphone pour que le transporteur et l'équipe Camioni puissent vous contacter au sujet de votre demande"; I.en["اكتب رقم هاتفك ليتمكن الناقل وفريق كاميوني من التواصل معك بخصوص طلبك"]="Enter your phone number so the carrier and the Camioni team can contact you about your order";
-  I.fr["أدخل رقماً جزائرياً صحيحاً: 10 أرقام تبدأ بـ 05 أو 06 أو 07."]="Entrez un numéro algérien valide : 10 chiffres commençant par 05, 06 ou 07."; I.en["أدخل رقماً جزائرياً صحيحاً: 10 أرقام تبدأ بـ 05 أو 06 أو 07."]="Enter a valid Algerian number: 10 digits starting with 05, 06 or 07.";
+  I.fr["اكتب رقم هاتفك ليتمكن الناقل من التواصل معك بخصوص طلبك"]="Écrivez votre numéro de téléphone pour que le transporteur puisse vous contacter au sujet de votre demande"; I.en["اكتب رقم هاتفك ليتمكن الناقل من التواصل معك بخصوص طلبك"]="Enter your phone number so the carrier can contact you about your order";
+  I.fr["أدخل رقماً جزائرياً صحيحاً — كل الصيغ مقبولة: 05… أو +213… أو 00213… أو 213…"]="Entrez un numéro algérien valide — tous les formats sont acceptés : 05…, +213…, 00213… ou 213…"; I.en["أدخل رقماً جزائرياً صحيحاً — كل الصيغ مقبولة: 05… أو +213… أو 00213… أو 213…"]="Enter a valid Algerian number — all formats accepted: 05…, +213…, 00213… or 213…";
   I.fr["إرسال الطلب"]="Envoyer la demande"; I.en["إرسال الطلب"]="Send the order";
   I.fr["أكّد أنك أنت"]="Confirmez que c'est vous"; I.en["أكّد أنك أنت"]="Confirm that it's you";
   I.fr["أدخل الرمز المكوّن من 4 أرقام الذي أرسلناه عبر واتساب."]="Entrez le code à 4 chiffres que nous vous avons envoyé via WhatsApp."; I.en["أدخل الرمز المكوّن من 4 أرقام الذي أرسلناه عبر واتساب."]="Enter the 4-digit code we sent you via WhatsApp.";
   I.fr["تأكيد وإرسال الطلب"]="Confirmer et envoyer la demande"; I.en["تأكيد وإرسال الطلب"]="Confirm and send the order";
   I.fr["إرسال رمز جديد"]="Envoyer un nouveau code"; I.en["إرسال رمز جديد"]="Send a new code";
   I.fr["تم إرسال رمز جديد"]="Nouveau code envoyé"; I.en["تم إرسال رمز جديد"]="New code sent";
-  I.fr["أدخل الرمز كاملاً من 4 أرقام."]="Entrez le code complet à 4 chiffres."; I.en["أدخل الرمز كاملاً من 4 أرقام."]="Enter the full 4-digit code.";
+  I.fr["أدخل الأرقام الأربعة كاملة."]="Saisissez les quatre chiffres en entier."; I.en["أدخل الأرقام الأربعة كاملة."]="Enter all four digits.";
   I.fr["تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى."]="Impossible d'envoyer le code de confirmation pour le moment. Vérifiez votre connexion et réessayez."; I.en["تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى."]="Couldn't send the confirmation code right now. Check your connection and try again.";
   I.fr["الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً."]="Code incorrect ou expiré. Vérifiez le code et réessayez, ou demandez un nouveau code."; I.en["الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً."]="The code is incorrect or has expired. Check the code and try again, or request a new code.";
   I.fr["انتظر 60 ثانية قبل طلب رمز جديد."]="Attendez 60 secondes avant de demander un nouveau code."; I.en["انتظر 60 ثانية قبل طلب رمز جديد."]="Wait 60 seconds before requesting a new code.";
@@ -4463,6 +5142,419 @@ goTo(1,false);
     b.addEventListener("click",function(){setTimeout(update,60);});
   });
   update();
+})();
+</script>
+
+<script>
+/* ----- نافذة تسجيل السائق (زر «سجل كسائق») -----
+   تفتح داخل الموقع نفسه، بلا تحويل إلى أي صفحة خارجية. المراحل:
+   1) البيانات: اللقب، الاسم، الهاتف، الولاية (قائمة الـ69)، البلدية (قائمة
+      مسدلة تابعة للولاية من القائمة الرسمية COMMUNES — نفس قوائم «طلب جديد»،
+      لا كتابة يدوية)، نوع المركبة، وإقرارا المركبة والرخصة.
+   2) رمز واتساب من 4 أرقام عبر الخادم (/api/send-code ثم /api/verify-code).
+   3) الوثائق الخمس بالكاميرا، ثم إرسال الملف كاملاً إلى /api/driver-register
+      ليصل إلى لوحة التحكم مصنّفاً بولاية السائق بانتظار المراجعة والاعتماد. */
+(function(){
+  "use strict";
+  var modal = document.getElementById("driverModal");
+  var openBtn = document.getElementById("driverOpenBtn");
+  if (!modal || !openBtn) return;
+  var API = (typeof CAMIONI_API_BASE !== "undefined" && CAMIONI_API_BASE) ? String(CAMIONI_API_BASE).replace(/\/+$/, "") : "";
+
+  /* ترجمات النافذة: تُدمج في قواميس الموقع حتى يترجمها مبدّل اللغة كباقي الصفحة */
+  var DRV_FR = {
+    "تسجيل سائق جديد":"Inscription d'un nouveau chauffeur",
+    "خطوات قصيرة — أكملها من هاتفك في دقائق.":"Quelques étapes courtes — complétez-les depuis votre téléphone en quelques minutes.",
+    "1 · البيانات":"1 · Informations","2 · رمز واتساب":"2 · Code WhatsApp","3 · الوثائق":"3 · Documents","4 · تم الإرسال":"4 · Envoyé",
+    "اللقب":"Nom","أدخل اللقب من فضلك.":"Veuillez saisir le nom.","أدخل الاسم من فضلك.":"Veuillez saisir le prénom.",
+    "مثال: بن عيسى":"Ex. : Ben Aïssa","مثال: محمد":"Ex. : Mohamed",
+    "رقم الهاتف (واتساب)":"Numéro de téléphone (WhatsApp)",
+    "أدخل رقم هاتف صحيحاً — سيصلك عليه رمز التحقق.":"Saisissez un numéro valide — le code de vérification y sera envoyé.",
+    "الولاية":"Wilaya","اختر ولايتك من فضلك.":"Choisissez votre wilaya.",
+    "البلدية":"Commune","اختر بلديتك من القائمة من فضلك.":"Choisissez votre commune dans la liste.",
+    "نوع المركبة":"Type de véhicule","— اختر نوع مركبتك —":"— Choisissez votre véhicule —","اختر نوع المركبة من فضلك.":"Choisissez le type de véhicule.",
+    "نعم، لديّ مركبة":"Oui, je possède un véhicule",
+    "نعم، لديّ رخصة قيادة صالحة لمدة سنتين على الأقل":"Oui, j'ai un permis de conduire valide depuis au moins deux ans",
+    "سجّل الآن":"S'inscrire","بالضغط على «سجّل الآن» أنت توافق على شروط الاستخدام.":"En cliquant sur « S'inscrire », vous acceptez les conditions d'utilisation.",
+    "أرسلنا رمزاً من 4 أرقام إلى واتساب الرقم":"Nous avons envoyé un code à 4 chiffres sur WhatsApp au numéro",
+    "أدخل الرمز هنا لتأكيد رقمك:":"Saisissez le code ici pour confirmer votre numéro :",
+    "رجوع":"Retour","تأكيد الرقم":"Confirmer le numéro","لم يصلك الرمز؟":"Vous n'avez pas reçu le code ?",
+    "إرسال رمز جديد":"Envoyer un nouveau code","تم إرسال رمز جديد":"Nouveau code envoyé",
+    "رقمك مؤكَّد ✓ — الآن صوّر وثائقك بالكاميرا أو اخترها من هاتفك:":"Votre numéro est confirmé ✓ — photographiez maintenant vos documents ou choisissez-les depuis votre téléphone :",
+    "رخصة السياقة — الوجه الأمامي":"Permis de conduire — recto","رخصة السياقة — الوجه الخلفي":"Permis de conduire — verso",
+    "البطاقة الرمادية":"Carte grise","شهادة التأمين":"Attestation d'assurance","المراقبة التقنية":"Contrôle technique",
+    "اضغط للتصوير أو اختيار صورة":"Touchez pour photographier ou choisir une image",
+    "تأكد أن الصور واضحة ومقروءة — المراجعة تعتمد عليها لاعتماد حسابك.":"Assurez-vous que les photos sont nettes et lisibles — l'examen de votre compte en dépend.",
+    "إرسال الملف للمراجعة":"Envoyer le dossier pour examen","جارٍ الإرسال…":"Envoi en cours…",
+    "تم إرسال ملفك بنجاح":"Votre dossier a été envoyé avec succès",
+    "وصل ملفك إلى فريق كاميوني وهو الآن بانتظار المراجعة. إذا كانت وثائقك سليمة سنعتمد حسابك ويُفتح لك مباشرة، ويصلك إشعار بذلك على واتساب.":"Votre dossier est arrivé à l'équipe Camioni et il est en attente d'examen. Si vos documents sont en règle, nous validerons votre compte, il sera ouvert immédiatement et vous recevrez une notification sur WhatsApp.",
+    "أدخل الأرقام الأربعة كاملة.":"Saisissez les quatre chiffres en entier.",
+    "الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً.":"Le code est incorrect ou expiré. Vérifiez le code et réessayez, ou demandez un nouveau code.",
+    "تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى.":"Impossible d'envoyer le code de confirmation pour le moment. Vérifiez la connexion et réessayez.",
+    "انتظر 60 ثانية قبل طلب رمز جديد.":"Attendez 60 secondes avant de demander un nouveau code.",
+    "تعذّر إرسال ملفك الآن. تحقق من الاتصال وحاول مرة أخرى.":"Impossible d'envoyer votre dossier pour le moment. Vérifiez la connexion et réessayez.",
+    "الصورة أكبر من 10MB — اختر ملفاً أصغر.":"Le fichier dépasse 10 Mo — choisissez un fichier plus petit."
+  };
+  var DRV_EN = {
+    "تسجيل سائق جديد":"New driver registration",
+    "خطوات قصيرة — أكملها من هاتفك في دقائق.":"A few short steps — complete them from your phone in minutes.",
+    "1 · البيانات":"1 · Details","2 · رمز واتساب":"2 · WhatsApp code","3 · الوثائق":"3 · Documents","4 · تم الإرسال":"4 · Sent",
+    "اللقب":"Last name","أدخل اللقب من فضلك.":"Please enter the last name.","أدخل الاسم من فضلك.":"Please enter the first name.",
+    "مثال: بن عيسى":"E.g. Ben Aissa","مثال: محمد":"E.g. Mohamed",
+    "رقم الهاتف (واتساب)":"Phone number (WhatsApp)",
+    "أدخل رقم هاتف صحيحاً — سيصلك عليه رمز التحقق.":"Enter a valid phone number — the verification code will be sent to it.",
+    "الولاية":"Wilaya","اختر ولايتك من فضلك.":"Please select your wilaya.",
+    "البلدية":"Commune","اختر بلديتك من القائمة من فضلك.":"Please select your commune from the list.",
+    "نوع المركبة":"Vehicle type","— اختر نوع مركبتك —":"— Select your vehicle type —","اختر نوع المركبة من فضلك.":"Please select the vehicle type.",
+    "نعم، لديّ مركبة":"Yes, I have a vehicle",
+    "نعم، لديّ رخصة قيادة صالحة لمدة سنتين على الأقل":"Yes, I have a driving licence valid for at least two years",
+    "سجّل الآن":"Register now","بالضغط على «سجّل الآن» أنت توافق على شروط الاستخدام.":"By clicking “Register now” you agree to the Terms of Use.",
+    "أرسلنا رمزاً من 4 أرقام إلى واتساب الرقم":"We sent a 4-digit code via WhatsApp to",
+    "أدخل الرمز هنا لتأكيد رقمك:":"Enter the code here to confirm your number:",
+    "رجوع":"Back","تأكيد الرقم":"Confirm number","لم يصلك الرمز؟":"Didn't receive the code?",
+    "إرسال رمز جديد":"Send a new code","تم إرسال رمز جديد":"New code sent",
+    "رقمك مؤكَّد ✓ — الآن صوّر وثائقك بالكاميرا أو اخترها من هاتفك:":"Your number is confirmed ✓ — now photograph your documents or pick them from your phone:",
+    "رخصة السياقة — الوجه الأمامي":"Driving licence — front","رخصة السياقة — الوجه الخلفي":"Driving licence — back",
+    "البطاقة الرمادية":"Grey card (registration certificate)","شهادة التأمين":"Insurance certificate","المراقبة التقنية":"Technical inspection",
+    "اضغط للتصوير أو اختيار صورة":"Tap to photograph or pick an image",
+    "تأكد أن الصور واضحة ومقروءة — المراجعة تعتمد عليها لاعتماد حسابك.":"Make sure the photos are clear and readable — your account approval depends on them.",
+    "إرسال الملف للمراجعة":"Send file for review","جارٍ الإرسال…":"Sending…",
+    "تم إرسال ملفك بنجاح":"Your file was sent successfully",
+    "وصل ملفك إلى فريق كاميوني وهو الآن بانتظار المراجعة. إذا كانت وثائقك سليمة سنعتمد حسابك ويُفتح لك مباشرة، ويصلك إشعار بذلك على واتساب.":"Your file has reached the Camioni team and is now awaiting review. If your documents are in order, we will approve your account, it will be opened right away, and you will be notified on WhatsApp.",
+    "أدخل الأرقام الأربعة كاملة.":"Enter all four digits.",
+    "الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً.":"The code is incorrect or has expired. Check the code and try again, or request a new code.",
+    "تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى.":"Could not send the confirmation code right now. Check your connection and try again.",
+    "انتظر 60 ثانية قبل طلب رمز جديد.":"Wait 60 seconds before requesting a new code.",
+    "تعذّر إرسال ملفك الآن. تحقق من الاتصال وحاول مرة أخرى.":"Could not send your file right now. Check your connection and try again.",
+    "الصورة أكبر من 10MB — اختر ملفاً أصغر.":"The file is larger than 10MB — choose a smaller file."
+  };
+  if (window.CAMIONI_I18N) {
+    var k;
+    if (window.CAMIONI_I18N.fr) for (k in DRV_FR) window.CAMIONI_I18N.fr[k] = DRV_FR[k];
+    if (window.CAMIONI_I18N.en) for (k in DRV_EN) window.CAMIONI_I18N.en[k] = DRV_EN[k];
+  }
+  function T(ar){
+    var lang = document.documentElement.getAttribute("lang") || "ar";
+    var d = (window.CAMIONI_I18N && lang !== "ar") ? window.CAMIONI_I18N[lang] : null;
+    return (d && d[ar]) ? d[ar] : ar;
+  }
+  function $(id){ return document.getElementById(id); }
+  function normDigits(s){
+    return String(s == null ? "" : s).replace(/[٠-٩]/g, function(c){ return "٠١٢٣٤٥٦٧٨٩".indexOf(c); }).replace(/\D/g, "");
+  }
+  /* توحيد الرقم للخادم: كل الصيغ المقبولة تصبح 213XXXXXXXXX */
+  function intlPhone(raw){
+    var d = normDigits(raw);
+    if (d.indexOf("00213") === 0) d = "213" + d.slice(5);
+    else if (d.charAt(0) === "0") d = "213" + d.slice(1);
+    return d;
+  }
+  /* الخادم يشترط الصيغة المحلية 0XXXXXXXXX في حقل هاتف التسجيل */
+  function localPhone(raw){
+    var d = intlPhone(raw);
+    if (d.indexOf("213") === 0) d = "0" + d.slice(3);
+    return d;
+  }
+  function apiPost(path, body){
+    return fetch(API + path, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(body)
+    }).then(function(res){
+      return res.json().then(function(data){ return {ok: res.ok, status: res.status, data: data || {}}; }, function(){ return {ok: res.ok, status: res.status, data: {}}; });
+    });
+  }
+  function apiCooldown(r){
+    if (!r) return false;
+    if (r.status === 429) return true;
+    var d = r.data || {};
+    if (d.retryAfter != null || d.retry_after != null || d.waitSeconds != null || d.wait_seconds != null) return true;
+    var e = String(d.error || d.code || d.message || "");
+    return /wait|cooldown|too[_ ]?many|retry|60|انتظ/i.test(e);
+  }
+  var MSG_SEND_FAIL = "تعذّر إرسال رمز التأكيد الآن. تحقق من الاتصال وحاول مرة أخرى.";
+  var MSG_CODE_BAD = "الرمز غير صحيح أو انتهت صلاحيته. تحقق من الرمز وحاول مرة أخرى، أو اطلب رمزاً جديداً.";
+  var MSG_WAIT = "انتظر 60 ثانية قبل طلب رمز جديد.";
+  var MSG_FILE_FAIL = "تعذّر إرسال ملفك الآن. تحقق من الاتصال وحاول مرة أخرى.";
+  function showLineErr(el, ar){ if (!el) return; el.textContent = T(ar); el.classList.add("show"); }
+  function hideLineErr(el){ if (el) el.classList.remove("show"); }
+
+  /* أنواع المركبات الـ26 كما تظهر في أسطول الشركاء */
+  var VEHICLES = ["فورغون طويل (حتى 1.86 طن)","فورغون قصير (حتى 1.5 طن)","فورغون عادي (حتى 730 كغ)","شانغي صندوق (حتى 985 كغ)","هاربين مكشوفة (حتى 3.5 طن)","هاربين كابينة مزدوجة (حتى 1.5 طن)","هاربين مغطاة (حتى 3.5 طن)","مركبة ثلاثية العجلات (حتى 800 كغ)","شاحنة بجوانب (حتى 5 طن)","شاحنة مسطحة (حتى 16 طن)","شاحنة بمقطورة مفتوحة (حتى 40 طن)","شاحنة حاوية (حتى 40 طن)","شاحنة قلاب عادية (حتى 4 طن)","شاحنة قلاب شاكمان (حتى 30 طن)","شاحنة مبردة صغيرة (حتى 3.5 طن)","شاحنة مبردة متوسطة (حتى 4 طن)","شاحنة مبردة نصف مقطورة كبيرة (حتى 40 طن)","صهريج ماء (حتى 20.000 لتر)","صهريج وقود (حتى 35.000 لتر)","شاحنة شفط المجاري (حتى 6.000 لتر)","شاحنة سحب متوسطة","شاحنة رفع خفيفة (حتى 3 طن)","ناقلة سيارات (حتى 40 طن)","شاحنة مضخة خرسانة","رافعة شوكية","ناقل معدات (حتى 60 طن)"];
+  var vSel = $("dVehicle");
+  VEHICLES.forEach(function(v){
+    var o = document.createElement("option");
+    o.value = v; o.textContent = v;
+    vSel.appendChild(o);
+  });
+
+  /* فتح / إغلاق */
+  function openModal(){
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+    setTimeout(function(){ var f = $("dLast"); if (f) f.focus(); }, 60);
+  }
+  function closeModal(){
+    modal.hidden = true;
+    document.body.style.overflow = "";
+  }
+  openBtn.addEventListener("click", openModal);
+  $("driverClose").addEventListener("click", closeModal);
+  $("drvDoneBtn").addEventListener("click", closeModal);
+  modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modal.hidden) closeModal(); });
+
+  /* التنقل بين المراحل */
+  function goPane(n){
+    [1, 2, 3, 4].forEach(function(k){ $("drvPane" + k).hidden = k !== n; });
+    modal.querySelectorAll("#drvProgress .p").forEach(function(p){
+      var k = +p.getAttribute("data-p");
+      p.classList.toggle("on", k === n);
+      p.classList.toggle("done", k < n);
+    });
+    var box = modal.querySelector(".drv-box");
+    if (box) box.scrollTop = 0;
+  }
+
+  /* ---------- المرحلة 1: البيانات ---------- */
+  var driver = {};
+  var sendErr = $("drvSendErr");
+  function setInvalid(fieldId, bad){
+    var f = $(fieldId);
+    if (f) f.classList.toggle("invalid", bad);
+    return !bad;
+  }
+  $("drvPane1").addEventListener("submit", function(e){
+    e.preventDefault();
+    var ok = true, firstBad = null;
+    function chk(fieldId, input, valid){
+      var good = setInvalid(fieldId, !valid);
+      if (!good) { ok = false; if (!firstBad) firstBad = input; }
+    }
+    chk("df-last", $("dLast"), $("dLast").value.trim().length >= 2);
+    chk("df-first", $("dFirst"), $("dFirst").value.trim().length >= 2);
+    chk("df-phone", $("dPhone"), /^(\+213|00213|213|0)[567]\d{8}$/.test($("dPhone").value.replace(/[\s()-]/g, "")));
+    chk("df-wilaya", $("dWilaya"), !!$("dWilaya").value);
+    chk("df-commune", $("dCommune"), !!$("dCommune").value);
+    chk("df-vehicle", $("dVehicle"), !!$("dVehicle").value);
+    [["dHasCar", "dd-car"], ["dHasLic", "dd-lic"]].forEach(function(pair){
+      var c = $(pair[0]);
+      var bad = !c.checked;
+      $(pair[1]).classList.toggle("invalid", bad);
+      if (bad) { ok = false; if (!firstBad) firstBad = c; }
+    });
+    if (!ok) {
+      if (firstBad) {
+        firstBad.scrollIntoView({behavior: "smooth", block: "center"});
+        if (firstBad.focus) setTimeout(function(){ firstBad.focus({preventScroll: true}); }, 350);
+      }
+      return;
+    }
+    driver = {
+      last: $("dLast").value.trim(),
+      first: $("dFirst").value.trim(),
+      phoneIntl: intlPhone($("dPhone").value),
+      phoneLocal: localPhone($("dPhone").value),
+      wilaya: $("dWilaya").value.split(" - ").slice(1).join(" - "),
+      commune: $("dCommune").value,
+      vehicle: $("dVehicle").value
+    };
+    hideLineErr(sendErr);
+    if (!API) { showSent(); return; }
+    var btn = $("drvRegisterBtn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    apiPost("/api/send-code", {phone: driver.phoneIntl}).then(function(r){
+      btn.disabled = false;
+      if (r && r.ok) { showSent(); return; }
+      showLineErr(sendErr, apiCooldown(r) ? MSG_WAIT : MSG_SEND_FAIL);
+    }).catch(function(){
+      btn.disabled = false;
+      showLineErr(sendErr, MSG_SEND_FAIL);
+    });
+  });
+  /* إزالة حالة الخطأ عند التصحيح */
+  [["dLast", "df-last"], ["dFirst", "df-first"], ["dPhone", "df-phone"], ["dWilaya", "df-wilaya"], ["dCommune", "df-commune"], ["dVehicle", "df-vehicle"]].forEach(function(pair){
+    var el = $(pair[0]);
+    if (!el) return;
+    var clear = function(){ setInvalid(pair[1], false); hideLineErr(sendErr); };
+    el.addEventListener("input", clear);
+    el.addEventListener("change", clear);
+  });
+  [["dHasCar", "dd-car"], ["dHasLic", "dd-lic"]].forEach(function(pair){
+    $(pair[0]).addEventListener("change", function(){ $(pair[1]).classList.remove("invalid"); });
+  });
+
+  /* ---------- المرحلة 2: رمز واتساب ---------- */
+  var otpErr = $("drvOtpErr");
+  var digits = Array.prototype.slice.call(modal.querySelectorAll(".drv-digit"));
+  function showSent(){
+    $("drvSentPhone").textContent = "+" + driver.phoneIntl;
+    digits.forEach(function(d){ d.value = ""; d.classList.remove("bad"); });
+    hideLineErr(otpErr);
+    goPane(2);
+    setTimeout(function(){ if (digits[0]) digits[0].focus(); }, 80);
+  }
+  function confirmCode(){
+    var code = digits.map(function(d){ return d.value; }).join("");
+    if (code.length < 4) {
+      showLineErr(otpErr, "أدخل الأرقام الأربعة كاملة.");
+      var firstEmpty = null;
+      digits.forEach(function(d){ if (!d.value) { d.classList.add("bad"); if (!firstEmpty) firstEmpty = d; } });
+      if (firstEmpty) firstEmpty.focus();
+      return;
+    }
+    hideLineErr(otpErr);
+    if (!API) { goPane(3); return; }
+    var btn = $("drvConfirmBtn");
+    if (btn.disabled) return;
+    btn.disabled = true;
+    apiPost("/api/verify-code", {phone: driver.phoneIntl, code: code}).then(function(r){
+      btn.disabled = false;
+      if (r && r.ok && r.data && r.data.verified === true) { goPane(3); return; }
+      showLineErr(otpErr, MSG_CODE_BAD);
+      digits.forEach(function(d){ d.classList.add("bad"); });
+    }).catch(function(){
+      btn.disabled = false;
+      showLineErr(otpErr, MSG_CODE_BAD);
+      digits.forEach(function(d){ d.classList.add("bad"); });
+    });
+  }
+  digits.forEach(function(d, i){
+    d.addEventListener("input", function(){
+      d.value = normDigits(d.value).slice(-1);
+      d.classList.remove("bad");
+      hideLineErr(otpErr);
+      if (d.value && i < digits.length - 1) digits[i + 1].focus();
+    });
+    d.addEventListener("keydown", function(e){
+      if (e.key === "Backspace" && !d.value && i > 0) digits[i - 1].focus();
+      if (e.key === "Enter") { e.preventDefault(); confirmCode(); }
+    });
+    d.addEventListener("paste", function(e){
+      e.preventDefault();
+      var t = normDigits((e.clipboardData || window.clipboardData).getData("text")).slice(0, 4);
+      t.split("").forEach(function(ch, j){ if (digits[j]) { digits[j].value = ch; digits[j].classList.remove("bad"); } });
+      hideLineErr(otpErr);
+      var nxt = digits[Math.min(t.length, digits.length - 1)];
+      if (nxt) nxt.focus();
+    });
+  });
+  $("drvConfirmBtn").addEventListener("click", confirmCode);
+  $("drvBack1").addEventListener("click", function(){ goPane(1); });
+  var resendBtn = $("drvResend");
+  resendBtn.addEventListener("click", function(){
+    if (resendBtn.disabled) return;
+    if (!API) {
+      digits.forEach(function(d){ d.value = ""; d.classList.remove("bad"); });
+      if (digits[0]) digits[0].focus();
+      return;
+    }
+    resendBtn.disabled = true;
+    apiPost("/api/send-code", {phone: driver.phoneIntl}).then(function(r){
+      if (r && r.ok) {
+        digits.forEach(function(d){ d.value = ""; d.classList.remove("bad"); });
+        hideLineErr(otpErr);
+        if (digits[0]) digits[0].focus();
+        resendBtn.textContent = T("تم إرسال رمز جديد") + " ✓";
+        setTimeout(function(){
+          resendBtn.disabled = false;
+          resendBtn.textContent = T("إرسال رمز جديد");
+        }, 3000);
+        return;
+      }
+      resendBtn.disabled = false;
+      showLineErr(otpErr, apiCooldown(r) ? MSG_WAIT : MSG_SEND_FAIL);
+    }).catch(function(){
+      resendBtn.disabled = false;
+      showLineErr(otpErr, MSG_SEND_FAIL);
+    });
+  });
+
+  /* ---------- المرحلة 3: الوثائق الخمس ---------- */
+  var DOCS = [
+    {field: "licence_front", name: "رخصة السياقة — الوجه الأمامي"},
+    {field: "licence_back", name: "رخصة السياقة — الوجه الخلفي"},
+    {field: "grey_card", name: "البطاقة الرمادية"},
+    {field: "insurance", name: "شهادة التأمين"},
+    {field: "technical_inspection", name: "المراقبة التقنية"}
+  ];
+  var docFiles = {};
+  var docErr = $("drvDocErr");
+  var docWrap = $("drvDocs");
+  var submitBtn = $("drvSubmitBtn");
+  function refreshSend(){
+    var n = Object.keys(docFiles).length;
+    submitBtn.disabled = n < DOCS.length;
+    submitBtn.textContent = T("إرسال الملف للمراجعة") + (n < DOCS.length ? " (" + n + "/" + DOCS.length + ")" : "");
+  }
+  DOCS.forEach(function(d){
+    var label = document.createElement("label");
+    label.className = "drv-doc";
+    label.innerHTML = '<img alt="" /><span class="t"><b></b><small></small></span><span class="st">+</span><input type="file" accept="image/*,.pdf" capture="environment" />';
+    label.querySelector("b").textContent = T(d.name);
+    var small = label.querySelector("small");
+    small.textContent = T("اضغط للتصوير أو اختيار صورة");
+    var img = label.querySelector("img");
+    var input = label.querySelector("input");
+    input.setAttribute("aria-label", d.name);
+    input.addEventListener("change", function(){
+      var file = input.files && input.files[0];
+      if (!file) return;
+      if (file.size > 10 * 1024 * 1024) {
+        delete docFiles[d.field];
+        label.classList.remove("filled");
+        img.removeAttribute("src");
+        img.style.display = "none";
+        label.querySelector(".st").textContent = "+";
+        small.textContent = T("الصورة أكبر من 10MB — اختر ملفاً أصغر.");
+        small.style.color = "#c2261b";
+        refreshSend();
+        return;
+      }
+      docFiles[d.field] = file;
+      small.style.color = "";
+      small.textContent = file.name;
+      label.querySelector(".st").textContent = "✓";
+      label.classList.add("filled");
+      if (/^image\//.test(file.type || "")) {
+        img.src = URL.createObjectURL(file);
+        img.style.display = "block";
+      } else {
+        img.removeAttribute("src");
+        img.style.display = "none";
+      }
+      hideLineErr(docErr);
+      refreshSend();
+    });
+    docWrap.appendChild(label);
+  });
+  refreshSend();
+  submitBtn.addEventListener("click", function(){
+    hideLineErr(docErr);
+    if (!API) { showLineErr(docErr, MSG_FILE_FAIL); return; }
+    if (submitBtn.disabled) return;
+    var fd = new FormData();
+    fd.append("first_name", driver.first);
+    fd.append("last_name", driver.last);
+    fd.append("phone", driver.phoneLocal);
+    fd.append("vehicle_type", driver.vehicle);
+    fd.append("wilaya", driver.wilaya);
+    fd.append("commune", driver.commune);
+    DOCS.forEach(function(d){ if (docFiles[d.field]) fd.append(d.field, docFiles[d.field]); });
+    submitBtn.disabled = true;
+    submitBtn.textContent = T("جارٍ الإرسال…");
+    fetch(API + "/api/driver-register", {method: "POST", body: fd}).then(function(res){
+      return res.json().then(function(data){ return {ok: res.ok, data: data || {}}; }, function(){ return {ok: res.ok, data: {}}; });
+    }).then(function(r){
+      if (r && r.ok) { goPane(4); return; }
+      refreshSend();
+      showLineErr(docErr, (r && r.data && r.data.message) ? r.data.message : MSG_FILE_FAIL);
+    }).catch(function(){
+      refreshSend();
+      showLineErr(docErr, MSG_FILE_FAIL);
+    });
+  });
 })();
 </script>
 </body>
