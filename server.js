@@ -631,8 +631,10 @@ const server = http.createServer(async (req, res) => {
   // Files (image or PDF, max 10MB each): licence_front, licence_back, grey_card,
   // insurance, technical_inspection.
   // Stored under ./uploads/<registrationId>/ with a registration.json next to
-  // the files, then forwarded to the owner on WhatsApp (summary text + one
-  // media message per document). A failed notification never fails the request.
+  // the files, then a SHORT notification is sent to the owner on WhatsApp
+  // (no documents — the data and documents go to the dashboard, where the
+  // auto-import picks them up for review). A failed notification never fails
+  // the request.
   if (req.method === "POST" && url.pathname === "/api/driver-register") {
     let parsed;
     try {
@@ -700,37 +702,25 @@ const server = http.createServer(async (req, res) => {
     console.log(`Driver registration ${registrationId} stored (${Object.keys(storedFiles).length} files)`);
 
     const fullName = `${meta.first_name} ${meta.last_name}`;
+    // Owner gets only a short notification — no documents. The data and
+    // documents go to the dashboard (auto-import), where they are reviewed.
     const summary =
-      `تسجيل سائق جديد — كاميوني\n` +
+      `✅ تم تسجيل سائق جديد بنجاح — كاميوني\n` +
       `الاسم: ${fullName}\n` +
-      `الهاتف: ${meta.phone}\n` +
-      `المركبة: ${meta.vehicle_type}\n` +
       `الولاية: ${meta.wilaya}\n` +
-      `البلدية: ${meta.commune}` +
-      (meta.referral_code ? `\nرمز الدعوة: ${meta.referral_code}` : "") +
-      `\nرقم التسجيل: ${registrationId}`;
+      `المركبة: ${meta.vehicle_type}\n` +
+      `ملفه في لوحة التحكم بانتظار المراجعة.`;
     let summarySent = false;
     try {
       await sendWhatsAppText(OWNER_WHATSAPP_NUMBER, summary);
       summarySent = true;
     } catch (e) {
-      console.error(`Owner summary send failed for ${registrationId}:`, e.status || "", JSON.stringify(e.meta || e.message));
-    }
-    const failedDocuments = [];
-    for (const [field, info] of Object.entries(storedFiles)) {
-      try {
-        const media = await uploadWhatsAppMedia(files[field].data, info.mime, info.fileName);
-        await sendWhatsAppMedia(OWNER_WHATSAPP_NUMBER, media.id, info.mime, `${DOC_LABELS[field]} - ${fullName}`, info.fileName);
-      } catch (e) {
-        console.error(`Owner media send failed for ${registrationId}/${field}:`, e.status || "", JSON.stringify(e.meta || e.message));
-        failedDocuments.push(field);
-      }
+      console.error(`Owner notification send failed for ${registrationId}:`, e.status || "", JSON.stringify(e.meta || e.message));
     }
     return sendJson(res, 200, {
       ok: true,
       registrationId,
       files: Object.keys(storedFiles),
-      failedDocuments,
       summarySent,
     }, origin || "*");
   }
