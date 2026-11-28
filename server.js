@@ -3,6 +3,11 @@
 //   GET  /api/health
 //   POST /api/send-code   { "phone": "0561555300" }  -> sends a 4-digit code by WhatsApp
 //   POST /api/verify-code { "phone": "0561555300", "code": "1234" } -> { "verified": true/false }
+//   POST /api/send-message (header x-admin-key) { "phone": ..., "text": ... }
+//                      -> sends one plain-text WhatsApp message from the
+//                         Camioni number (used by the admin dashboard to
+//                         deliver document-expiry and oil-change reminders
+//                         automatically, with no manual step)
 //   POST /api/driver-register (multipart/form-data)
 //                      driver fields + document photos -> stored on disk and
 //                      forwarded to the owner on WhatsApp
@@ -570,6 +575,53 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, { verified: true }, origin || "*");
     }
     return sendJson(res, 200, { verified: false, error: "wrong_code", attemptsLeft: MAX_ATTEMPTS - entry.attempts }, origin || "*");
+  }
+
+  // ---- dashboard messaging (header x-admin-key) ----
+  // POST /api/send-message { "phone": "0561555300", "text": "..." } -> sends
+  // one plain-text WhatsApp message from the Camioni number. The admin
+  // dashboard calls this to deliver document-expiry and oil-change
+  // reminders automatically. Plain text reaches a driver only inside an
+  // open 24-hour conversation window (he messaged the Camioni number
+  // first); outside the window Meta rejects the send, and the dashboard
+  // keeps the reminder pending and retries it on the next daily scan.
+  if (req.method === "POST" && url.pathname === "/api/send-message") {
+    const auth = checkAdminKey(req);
+    if (auth === "not_configured") {
+      return sendJson(res, 503, { ok: false, error: "admin_key_not_configured" }, origin || "*");
+    }
+    if (auth !== "ok") {
+      return sendJson(res, 401, { ok: false, error: "unauthorized" }, origin || "*");
+    }
+    let body;
+    try {
+      body = await readJsonBody(req);
+    } catch (e) {
+      return sendJson(res, 400, { ok: false, error: "bad_request" }, origin || "*");
+    }
+    const phone = normalizePhone(body.phone);
+    if (!phone) {
+      return sendJson(res, 400, { ok: false, error: "invalid_phone" }, origin || "*");
+    }
+    const text = typeof body.text === "string" ? body.text.trim() : "";
+    if (!text || text.length > 4096) {
+      return sendJson(res, 400, { ok: false, error: "invalid_text" }, origin || "*");
+    }
+    if (!MOCK_SEND && !WHATSAPP_TOKEN) {
+      return sendJson(res, 500, { ok: false, error: "server_not_configured" }, origin || "*");
+    }
+    try {
+      const sent = await sendWhatsAppText(phone, text);
+      console.log(`Dashboard message sent to ${phone}, message ${sent && sent.id ? sent.id : "?"}`);
+      return sendJson(res, 200, { ok: true, messageId: sent && sent.id ? sent.id : null }, origin || "*");
+    } catch (e) {
+      console.error("Dashboard send failed:", e.status || "", JSON.stringify(e.meta || e.message));
+      const detail =
+        e.meta && e.meta.error && typeof e.meta.error.message === "string"
+          ? e.meta.error.message
+          : "";
+      return sendJson(res, 502, { ok: false, error: "whatsapp_send_failed", detail }, origin || "*");
+    }
   }
 
   // ---- driver registration (landing page) ----
